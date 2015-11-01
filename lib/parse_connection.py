@@ -27,8 +27,5 @@ class ParseConnection(object):
         path =  "" if objectId == None else "/{0}".format(objectId)
         query = "" if queryDict == [] else "?{0}".format(urllib.urlencode(queryDict))
         url = '/1/classes/{0}{1}{2}'.format(table, path, query)
-        print url
         self.connection.request('GET', url, '', self.META_DATA)
-        res = json.loads(self.connection.getresponse().read())
-        print res
-        return res
+        return json.loads(self.connection.getresponse().read())

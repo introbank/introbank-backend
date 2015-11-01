@@ -5,4 +5,3 @@ from base_target_data import BaseTargetData
 
 class PerformerData(BaseTargetData):
     tableName = "Performer"
-

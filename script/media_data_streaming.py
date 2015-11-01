@@ -7,6 +7,8 @@ from performer_data import PerformerData
 from group_data import GroupData
 
 class MediaDataStreaming(object):
+    COMMIN_TRACK = ["#ƒAƒCƒhƒ‹"]
+
     def __init__(self):
         self.track = []
         self.follow = []
@@ -18,6 +20,7 @@ class MediaDataStreaming(object):
         self.follow = follow
 
     def main(self):
+        print "start main streaming proc"
         for item in TwitterStream.get(follow=self.follow, track=self.track):
             try:
                 mediaList = item["entities"]["media"]
@@ -46,8 +49,18 @@ if __name__ == '__main__':
     performer = PerformerData()
     group = GroupData()
     
-    print performer.getAllTwitterIdWithHash()
-    print group.getAllTwitterIdWithHash()
+    follow = []
+    track = []
+
+    follow += performer.getAllTwitterIdList()
+    followWithTrack = group.getAllTwitterIdListWithHashtagList()
     
-    streaming.setTrack(["twitter", "#cheerz", "#idol"])
-    #streaming.main()
+    follow += followWithTrack["twitterIdList"]
+    track += followWithTrack["hashtagList"]
+    
+    print follow
+    print track
+
+    streaming.setFollow(follow)
+    streaming.setTrack(track)
+    streaming.main()

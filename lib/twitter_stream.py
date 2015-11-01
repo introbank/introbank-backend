@@ -13,7 +13,6 @@ class TwitterStream(object):
             yield item
                             
 if __name__ == '__main__':
-    ## test
     target = "#nhk"
     for item in TwitterStream.get(track=[target]):
         print item
