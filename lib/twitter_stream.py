@@ -2,18 +2,18 @@
 # easy_install python_twitter
 from twitter_util import TwitterUtil
 import dateutil.parser
+import urllib
 
 class TwitterStream(object):
     @classmethod
     def get(cls, follow=None, track=None):
+        print "get api start"
         api = TwitterUtil.getStreamApiInstance()
         for item in api.GetStreamFilter(follow=follow, track=track):
-            print '---------------------'
-            if 'text' in item:
-                print (item['id_str'])
-                print (dateutil.parser.parse(item['created_at']))
-                print (item['text'])
-                print (item['place'])
-     
+            yield item
+                            
 if __name__ == '__main__':
-    TwitterStream.get(track=["BiSH"]) 
+    ## test
+    target = "#nhk"
+    for item in TwitterStream.get(track=[target]):
+        print item
