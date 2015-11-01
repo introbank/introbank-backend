@@ -22,8 +22,8 @@ class MediaDataStreaming(object):
                 text = item["text"]
                 print "========="
                 for media in mediaList:
-                    data = MediaTableData(media['source_user_id'], media['source_status_id_str'], media['media_url'], text)
-                    res = data.insert()
+                    data = MediaTableData()
+                    res = data.insert(media['source_user_id'], media['source_status_id_str'], media['media_url'], text)
                     print res
 
             except (KeyError, BrankMediaData):
@@ -41,5 +41,5 @@ class BrankMediaData(BaseException):
         
 if __name__ == '__main__':
     streaming = MediaDataStreaming()
-    streaming.setTrack(["#cheerz", "#idol"])
+    streaming.setTrack(["twitter", "#cheerz", "#idol"])
     streaming.main()

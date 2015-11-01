@@ -5,18 +5,12 @@ from parse_connection import ParseConnection
 class MediaTableData(object):
     tableName = "Media"
 
-    def __init__(self, twitterId, twitterStatusId, mediaUri, info):
-        self.twitterId = twitterId
-        self.twitterStatusId = twitterStatusId
-        self.mediaUri = mediaUri
-        self.info = info
-  
-    def insert(self):
+    def insert(cls, twitterId, twitterStatusId, mediaUri, info):
         connection = ParseConnection()
-        dataDict = {"twitterId": str(self.twitterId),
-                "twitterStatusId": str(self.twitterStatusId),
-                "mediaUri": self.mediaUri, 
-                "info": self.info}
+        dataDict = {"twitterId": str(twitterId),
+                "twitterStatusId": str(twitterStatusId),
+                "mediaUri": mediaUri, 
+                "info": info}
         connection.connect()
-        res = connection.insert(self.tableName, dataDict)
+        res = connection.insert(cls.tableName, dataDict)
         return res
