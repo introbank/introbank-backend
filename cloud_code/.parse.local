@@ -1,0 +1,10 @@
+{
+  "applications": {
+    "_default": {
+      "link": "introbank"
+    },
+    "introbank": {
+      "applicationId": "LID0MpbVk0JBivgVMSO6hXO5cQ3wBdlgvA8eEbES"
+    }
+  }
+}
