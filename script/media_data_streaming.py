@@ -3,6 +3,8 @@ import sys, os
 sys.path.append('{0}/../lib'.format(os.path.dirname(os.path.abspath(__file__))))
 from twitter_stream import TwitterStream
 from media_data import MediaTableData
+from performer_data import PerformerData
+from group_data import GroupData
 
 class MediaDataStreaming(object):
     def __init__(self):
@@ -41,5 +43,11 @@ class BrankMediaData(BaseException):
         
 if __name__ == '__main__':
     streaming = MediaDataStreaming()
+    performer = PerformerData()
+    group = GroupData()
+    
+    print performer.getAllTwitterIdWithHash()
+    print group.getAllTwitterIdWithHash()
+    
     streaming.setTrack(["twitter", "#cheerz", "#idol"])
-    streaming.main()
+    #streaming.main()
