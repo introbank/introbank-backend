@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 # easy_install python_twitter
 from twitter_util import TwitterUtil
-import dateutil.parser
-import urllib
 
 class TwitterStream(object):
     @classmethod

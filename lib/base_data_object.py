@@ -1,18 +1,14 @@
 # -*- coding: utf-8 -*-
-from abc import abstractmethod
-from parse_connection import ParseConnection
 
 class BaseDataObject(object):
-    @classmethod
-    def select(cls, objectId = None, queryDict = []):
-        connection = ParseConnection()
-        connection.connect()
-        return connection.select(cls.tableName, objectId, queryDict)
+    def __init__(self, connection):
+        self.connection = connection
 
-#    @abstractmethod
-#    def update(self):
-#        pass
-#
-#    @abstractmethod
-#    def select(self):
-#        pass
+    def _select(self, objectId = None, queryDict = []):
+        return self.connection.select(self.tableName, objectId, queryDict)
+
+    def _insert(self, dataDict):
+        return self.connection.insert(self.tableName, dataDict)
+
+class DataObjectException(BaseException):
+    pass

@@ -1,13 +1,10 @@
 # -*- coding: utf-8 -*-
-from twitter_util import TwitterUtil
-from parse_connection import ParseConnection
 from base_data_object import BaseDataObject
 
-class MediaTableDataObject(BaseDataObject):
+class MediaDataObject(BaseDataObject):
     tableName = "Media"
 
-    def insert(cls, twitterId, twitterStatusId, mediaUri, info, hashtag = None):
-        connection = ParseConnection()
+    def insert(self, twitterId, twitterStatusId, mediaUri, info, hashtag = None):
         dataDict = {}
         if hashtag is None:
             dataDict = {"twitterId": str(twitterId),
@@ -20,7 +17,5 @@ class MediaTableDataObject(BaseDataObject):
                     "mediaUri": mediaUri,
                     "info": info,
                     "hashtag":hashtag}
-
-        connection.connect()
-        res = connection.insert(cls.tableName, dataDict)
-        return res
+        
+        return self._insert(dataDict)
