@@ -19,8 +19,12 @@ class ParseConnection(object):
     def connect(self):
         self.connection.connect()
 
+    def close(self):
+        self.connection.close()
+
     def getResponceDict(self):
-        return json.loads(self.connection.getresponse().read())
+        res =  self.connection.getresponse().read()
+        return json.loads(res)
 
     def insert(self, table, dataDict):
         self.connection.request('POST', '/1/classes/{0}'.format(table), json.dumps(dataDict), self.META_DATA)

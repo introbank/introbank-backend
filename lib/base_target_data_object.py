@@ -1,21 +1,23 @@
 # -*- coding: utf-8 -*-
-from twitter_util import TwitterUtil
-from parse_connection import ParseConnection
 from base_data_object import BaseDataObject
+from abc import abstractmethod
 
 class BaseTargetDataObject(BaseDataObject):
-    @classmethod
-    def getAllTwitterIdList(cls):
+
+    def getAllTwitterIdList(self):
         objectIdList = []
         twitterIdList = []
 
-        response = cls.select(queryDict={"keys":"twitterId"})
+        response = self._select(queryDict={"keys":"twitterId"})
         try:
             for data in response["results"]:
                 objectIdList.append(data["objectId"])
                 twitterIdList.append(data["twitterId"])
-        except KeyError as e:
+        except KeyError:
             raise Exception(response)
 
         return {"objectIdList": objectIdList, "twitterIdList": twitterIdList}       
 
+    @abstractmethod
+    def getInfoToInsertMedia(self):
+        pass
