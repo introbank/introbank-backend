@@ -2,9 +2,9 @@
 import sys, os 
 sys.path.append('{0}/../lib'.format(os.path.dirname(os.path.abspath(__file__))))
 from twitter_stream import TwitterStream
-from media_data import MediaTableData
-from performer_data import PerformerData
-from group_data import GroupData
+from media_data_object import MediaTableDataObject
+from performer_data_object import PerformerDataObject
+from group_data_object import GroupDataObject
 
 class MediaDataStreaming(object):
     COMMIN_TRACK = ["#ƒAƒCƒhƒ‹"]
@@ -27,7 +27,7 @@ class MediaDataStreaming(object):
                 text = item["text"]
                 print "========="
                 for media in mediaList:
-                    data = MediaTableData()
+                    data = MediaTableDataObject()
                     res = data.insert(media['source_user_id'], media['source_status_id_str'], media['media_url'], text)
                     print res
 
@@ -46,21 +46,21 @@ class BrankMediaData(BaseException):
         
 if __name__ == '__main__':
     streaming = MediaDataStreaming()
-    performer = PerformerData()
-    group = GroupData()
+    performerDataObject = PerformerDataObject()
+    groupDataObject = GroupDataObject()
     
-    follow = []
-    track = []
+    performers = performerDataObject.getAllTwitterIdList()
+    groups = groupDataObject.getAllTwitterIdListWithHashtagList()
 
-    follow += performer.getAllTwitterIdList()
-    followWithTrack = group.getAllTwitterIdListWithHashtagList()
+    print performers
+    print groups
     
-    follow += followWithTrack["twitterIdList"]
-    track += followWithTrack["hashtagList"]
+    follow = performers["twitterIdList"] + groups["twitterIdList"]
+    track = groups["hashtagList"]
     
     print follow
     print track
 
     streaming.setFollow(follow)
     streaming.setTrack(track)
-    streaming.main()
+    #streaming.main()
