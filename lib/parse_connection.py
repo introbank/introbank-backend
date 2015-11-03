@@ -19,13 +19,19 @@ class ParseConnection(object):
     def connect(self):
         self.connection.connect()
 
+    def getResponceDict(self):
+        return json.loads(self.connection.getresponse().read())
+
     def insert(self, table, dataDict):
         self.connection.request('POST', '/1/classes/{0}'.format(table), json.dumps(dataDict), self.META_DATA)
-        return json.loads(self.connection.getresponse().read())
+        return self.getResponceDict()
 
     def select(self, table, objectId = None, queryDict = []):
         path =  "" if objectId == None else "/{0}".format(objectId)
         query = "" if queryDict == [] else "?{0}".format(urllib.urlencode(queryDict))
         url = '/1/classes/{0}{1}{2}'.format(table, path, query)
         self.connection.request('GET', url, '', self.META_DATA)
-        return json.loads(self.connection.getresponse().read())
+        return self.getResponceDict()
+
+class ParseConnectionException(object):
+    pass
