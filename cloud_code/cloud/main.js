@@ -1,9 +1,6 @@
 var OAuth = require('cloud/oauth.js');
 var sha   = require('cloud/sha1.js');
 var Twitter = require('cloud/twitter.js');
-var Contribution = require('cloud/contribution.js');
-
-var url = 'https://api.twitter.com/1.1/users/show.json';
 
 // Use Parse.Cloud.define to define as many cloud functions as you want.
 // For example:
@@ -25,47 +22,32 @@ Parse.Cloud.job("userActCollect", function(request, status) {
 
     // In order to lookup authentication information.
     Parse.Cloud.useMasterKey();
+});
+
+Parse.Cloud.job('collectTwitterLike', function(request, status) {
+    console.log("Started collecting twitter likes");
+
+    Parse.Cloud.useMasterKey();
 
     var query = new Parse.Query(Parse.User);
     query.each(function(user) {
-        if (user.get("authData") != undefined && user.get("authData").twitter != undefined) {
-            var authToken = user.get("authData").twitter.auth_token;
-            var authTokenSecret = user.get("authData").twitter.auth_token_secret;
-            var screenName = user.get("authData").twitter.screen_name;
-            var consumerKey = user.get("authData").twitter.consumer_key;
-            var consumerSecret = user.get("authData").twitter.consumer_secret;
-
-            // Access Twitter API to obtain basic info for this user.
-            Parse.Cloud.httpRequest({
-                url: url,
-                followRedirects: true,
-                headers: {
-                    "Authorization": Twitter.getOAuthSignature(url, screenName,
-                        authToken, authTokenSecret, consumerKey, consumerSecret)
-                },
-                params: {
-                    screen_name: screenName
-                }
-            }).then(function (res) {
-                // In case of request success, save his contribution
-                // into Contribution class in Parse DB.
-                Twitter.saveContribution(res.data, function(contrib) {
-                    status.success("Success");
+        Twitter.getLike(user, function(error, likes) {
+            for (var i = 0; i < likes.length; i++) {
+                Twitter.saveTwitterContribution(likes[i], function(result) {
+                    //status.success("Success saving twitter contribution");
+                    console.log("Success saving twitter contribution");
                 }, function(error) {
-                    status.fail("Failed");
+                    status.error("Failed saving twitter contribution");
                 });
-            }, function (res) {
-                // In case of request failed
-                console.log(res.text);
-                status.fail("Failed");
-            });
-        }
+            }
+        }, function(error, result) {
+
+        });
     }).then(function() {
-        // Query submit succeeded
-        console.log("Query success");
+        console.log("Query submit success");
     }, function(error) {
-        // In case of query access error.
-        console.log("Query failed");
-        status.fail("Failed");
-    });
+        console.log("Query submission failed");
+        status.error("Query failed");
+    })
+
 });
