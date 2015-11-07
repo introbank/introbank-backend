@@ -100,12 +100,15 @@ var Twitter = {
         return acts;
     },
 
-    saveTwitterContribution: function(like, successCb, failCb) {
+    saveTwitterContribution: function(user, like, successCb, failCb) {
         var TwitterContribution = Parse.Object.extend('TwitterContribution');
         var contrib = new TwitterContribution();
         contrib.set('point', 10);
         contrib.set('type', 'like');
         contrib.set('targetTwitterId', like.user.id_str);
+        var u = new Parse.User();
+        u.id = user.id;
+        contrib.set('user', u);
         contrib.save(null, {
             success: function(contrib) {
                 successCb(contrib);
