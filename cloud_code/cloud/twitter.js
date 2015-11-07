@@ -89,3 +89,52 @@ var saveContribution = function(user, successCb, failCb) {
 
 module.exports.getOAuthSignature = getOAuthSignature;
 module.exports.saveContribution = saveContribution;
+
+/**
+ * Update the TwitterContribution by join Perfomer/Group on TwitterId
+ * @param type
+ * @param target
+ * @param successCb
+ * @param failCb
+ */
+var updateTwitterContribution = function(targetCol, target, twitterId, successCb, failCb) {
+    var TwitterContribution = Parse.Object.extend("TwitterContribution");
+    var twitterContribQuery = new Parse.Query(TwitterContribution);
+
+    query.equalTo("targetTwitterId", twitterId);
+
+    twitterContribQuery.find({
+        success: function(results) {
+            for (var i = 0; i < results.length; i++) {
+                var twitterContrib = new TwitterContribution();
+                twitterContrib.set({targetCol:target})
+                twitterContrib.save(results[i].id,{
+                    success:function(tiwtterContrib) {
+                    successCb(tiwtterContrib);
+                },
+                error:function(error) {
+                    failCb(error);
+                }
+        });
+        error: function(error) {
+        failCb(error);
+  }
+});
+
+
+    contrib.set("favourite_count", acts.favouriteCount);
+    contrib.set("followers_count", acts.followerCount);
+    contrib.set("lang", acts.lang);
+    contrib.set("profile_image_url", acts.profileImageUrl);
+    contrib.set("screen_name", acts.screenName);
+    contrib.save(null,{
+        success:function(contrib) {
+            successCb(contrib);
+        },
+        error:function(error) {
+            failCb(error);
+        }
+    });
+};
+
+
