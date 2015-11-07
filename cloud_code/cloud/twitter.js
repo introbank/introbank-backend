@@ -142,6 +142,40 @@ var Twitter = {
         });
     },
 
+    /**
+     * Update the TwitterContribution by join Perfomer/Group on TwitterId
+     * @param type
+     * @param target
+     * @param successCb
+     * @param failCb
+     */
+    updateTwitterContribution : function(targetCol, target, twitterId, successCb, failCb) {
+        var TwitterContribution = Parse.Object.extend("TwitterContribution");
+        var twitterContribQuery = new Parse.Query(TwitterContribution);
+        query.equalTo("targetTwitterId", twitterId);
+        twitterContribQuery.find({
+            success: function(results) {
+                if (results.lenght == 0){
+                    // to do delete contribute data recodes // 
+                }
+                for (var i = 0; i < results.length; i++) {
+                    var twitterContrib = new TwitterContribution();
+                    twitterContrib.set({targetCol:target});
+                    twitterContrib.save(results[i].id,{
+                        success:function(tiwtterContrib) {
+                            successCb(tiwtterContrib);
+                        },
+                        error:function(error) {
+                            failCb(error);
+                        }
+            })}},
+            error: function(error) {
+                failCb(error);
+            }
+        });
+    },
 };
 
+
 module.exports = Twitter;
+
