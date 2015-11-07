@@ -152,9 +152,7 @@ var Twitter = {
     updateTwitterContribution : function(targetCol, target, twitterId, successCb, failCb) {
         var TwitterContribution = Parse.Object.extend("TwitterContribution");
         var twitterContribQuery = new Parse.Query(TwitterContribution);
-
         query.equalTo("targetTwitterId", twitterId);
-
         twitterContribQuery.find({
             success: function(results) {
                 for (var i = 0; i < results.length; i++) {
@@ -171,7 +169,7 @@ var Twitter = {
             error: function(error) {
                 failCb(error);
             }
-        })};
+        });
     },
 };
 
