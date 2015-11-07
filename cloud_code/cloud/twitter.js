@@ -155,6 +155,9 @@ var Twitter = {
         query.equalTo("targetTwitterId", twitterId);
         twitterContribQuery.find({
             success: function(results) {
+                if (results.lenght == 0){
+                    // to do delete contribute data recodes // 
+                }
                 for (var i = 0; i < results.length; i++) {
                     var twitterContrib = new TwitterContribution();
                     twitterContrib.set({targetCol:target});
