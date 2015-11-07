@@ -1,6 +1,7 @@
 var OAuth = require('cloud/oauth.js');
 var sha   = require('cloud/sha1.js');
 var Twitter = require('cloud/twitter.js');
+var Contribution = require('cloud/contribution.js');
 
 var url = 'https://api.twitter.com/1.1/users/show.json';
 
