@@ -33,7 +33,7 @@ Parse.Cloud.job('collectTwitterLike', function(request, status) {
     query.each(function(user) {
         Twitter.getLike(user, function(error, likes) {
             for (var i = 0; i < likes.length; i++) {
-                Twitter.saveTwitterContribution(likes[i], function(result) {
+                Twitter.saveTwitterContribution(user, likes[i], function(result) {
                     //status.success("Success saving twitter contribution");
                     console.log("Success saving twitter contribution");
                 }, function(error) {
