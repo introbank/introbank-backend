@@ -51,3 +51,26 @@ Parse.Cloud.job('collectTwitterLike', function(request, status) {
     })
 
 });
+
+Parse.Cloud.job('updateTwitterContribution', function(request, status) {
+    console.log("Started updating twitter contribution class");
+
+    Parse.Cloud.useMasterKey();
+    var targets = [{type:"group", query:new Parse.Query(Parse.Group)}, {type:"performer", query: new Parse.Query(Parse.Performer)}]
+    for (var i = 0; i < targets.lenght; i++){
+        targets[i].query.each(function(result) {
+            Twitter.updateTwitterContribution(targets[i].type, result.objectId, result.twitterId,
+                    function(result) {
+                        console.log("Success update twitter contribution. twitterId=" + result.twitterId);
+                    }, function(error) {
+                    status.error("Failed saving twitter contribution");
+                })}
+            ).then(function() {
+            status.success("Success saving twitter contribution");
+            console.log("Query submit success");
+            }, function(error) {
+                console.log("Query submission failed");
+                status.error("Query failed");
+            })
+    }
+});
