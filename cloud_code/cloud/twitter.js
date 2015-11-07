@@ -2,6 +2,44 @@ var OAuth = require('cloud/oauth.js');
 var sha   = require('cloud/sha1.js');
 
 var Twitter = {
+
+    _extractAuthData : function(user) {
+        if (user.get("authData") != undefined
+            && user.get("authData").twitter != undefined) {
+            return {
+                screenName: user.get('authData').twitter.screen_name,
+                authToken: user.get('authData').twitter.auth_token,
+                authTokenSecret: user.get('authData').twitter.auth_token_secret,
+                consumerKey: user.get('authData').twitter.consumer_key,
+                consumerSecret: user.get('authData').twitter.consumer_secret
+            }
+        }
+    },
+
+    getLike : function(user, cbSuccess, cbFail) {
+        var url = "https://api.twitter.com/1.1/favorites/list.json";
+        var authData = Twitter._extractAuthData(user);
+
+        Parse.Cloud.httpRequest({
+            url: url,
+            followRedirects: true,
+            headers: {
+                "Authorization": Twitter.getOAuthSignature(url, authData.screenName,
+                    authData.authToken, authData.authTokenSecret, authData.consumerKey, authData.consumerSecret)
+            },
+            params: {
+                screen_name: authData.screenName
+            }
+        }).then(function (res) {
+            // In case of request success, save his contribution
+            // into Contribution class in Parse DB.
+            cbSuccess(null, res.data);
+        }, function (res) {
+            // In case of request failed
+            cbFail(res.text, "Failed");
+        });
+    },
+
     /**
      * Create OAuth 2.0 signature for Twitter API v1.1
      * @param url
@@ -60,6 +98,22 @@ var Twitter = {
         };
         
         return acts;
+    },
+
+    saveTwitterContribution: function(like, successCb, failCb) {
+        var TwitterContribution = Parse.Object.extend('TwitterContribution');
+        var contrib = new TwitterContribution();
+        contrib.set('point', 10);
+        contrib.set('type', 'like');
+        contrib.set('targetTwitterId', like.user.id_str);
+        contrib.save(null, {
+            success: function(contrib) {
+                successCb(contrib);
+            },
+            error: function(error) {
+                failCb(error);
+            }
+        })
     },
     
     /**
