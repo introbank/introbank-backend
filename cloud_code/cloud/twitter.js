@@ -106,78 +106,46 @@ var Twitter = {
         contrib.set('point', 10);
         contrib.set('type', 'like');
         contrib.set('targetTwitterId', like.user.id_str);
-        var u = new Parse.User();
-        u.id = user.id;
-        contrib.set('user', u);
-        contrib.save(null, {
-            success: function(contrib) {
-                successCb(contrib);
-            },
-            error: function(error) {
-                failCb(error);
-            }
-        })
-    },
+        contrib.set('targetTwitterStatusId', like.id_str);
+        var u = new Parse.User(); u.id = user.id; contrib.set('user', u);
+        contrib.save(null, { success: function(contrib) { successCb(contrib);
+        }, error: function(error) { failCb(error); } }) },
     
-    /**
-     * Save the contribution of given user into Contribution class.
-     * @param user
-     * @param successCb
-     * @param failCb
+    /** Save the contribution of given user into Contribution class.  @param
+     * user @param successCb @param failCb
      */
-    saveContribution : function(user, successCb, failCb) {
-        var acts = Twitter._parseTwitterActs(user);
+    saveContribution : function(user, successCb, failCb) { var acts =
+        Twitter._parseTwitterActs(user);
         
-        var Contribution = Parse.Object.extend("Contribution");
-        var contrib = new Contribution();
-        contrib.set("favourite_count", acts.favouriteCount);
-        contrib.set("followers_count", acts.followerCount);
-        contrib.set("lang", acts.lang);
+        var Contribution = Parse.Object.extend("Contribution"); var contrib =
+            new Contribution(); contrib.set("favourite_count",
+                    acts.favouriteCount); contrib.set("followers_count",
+                        acts.followerCount); contrib.set("lang", acts.lang);
         contrib.set("profile_image_url", acts.profileImageUrl);
-        contrib.set("screen_name", acts.screenName);
-        contrib.save(null,{
-            success:function(contrib) {
-                successCb(contrib);
-            },
-            error:function(error) {
-                failCb(error);
-            }
-        });
-    },
+        contrib.set("screen_name", acts.screenName); contrib.save(null,{
+            success:function(contrib) { successCb(contrib); },
+            error:function(error) { failCb(error); } }); },
 
-    /**
-     * Update the TwitterContribution by join Perfomer/Group on TwitterId
-     * @param type
-     * @param target
-     * @param successCb
-     * @param failCb
+    /** Update the TwitterContribution by join Perfomer/Group on TwitterId
+     * @param type @param target @param successCb @param failCb
      */
-    updateTwitterContribution : function(targetCol, target, twitterId, successCb, failCb) {
-        var TwitterContribution = Parse.Object.extend("TwitterContribution");
-        var twitterContribQuery = new Parse.Query(TwitterContribution);
-        query.equalTo("targetTwitterId", twitterId);
-        twitterContribQuery.find({
-            success: function(results) {
-                if (results.lenght == 0){
+    updateTwitterContribution : function(targetCol, target, twitterId,
+            successCb, failCb) { var TwitterContribution =
+                Parse.Object.extend("TwitterContribution"); var
+                    twitterContribQuery = new Parse.Query(TwitterContribution);
+                query.equalTo("targetTwitterId", twitterId);
+                twitterContribQuery.find({ success: function(results) { if
+                    (results.lenght == 0){
                     // to do delete contribute data recodes // 
-                }
-                for (var i = 0; i < results.length; i++) {
-                    var twitterContrib = new TwitterContribution();
+                } for (var i = 0; i < results.length; i++) { var twitterContrib
+                    = new TwitterContribution();
                     twitterContrib.set({targetCol:target});
                     twitterContrib.save(results[i].id,{
                         success:function(tiwtterContrib) {
-                            successCb(tiwtterContrib);
-                        },
-                        error:function(error) {
-                            failCb(error);
-                        }
-            })}},
-            error: function(error) {
-                failCb(error);
-            }
-        });
-    },
-};
+                            successCb(tiwtterContrib); }, error:function(error)
+                    { failCb(error); } })}}, error: function(error) {
+                                                                        failCb(error);
+                                                                    } }); }, };
 
 
 module.exports = Twitter;
