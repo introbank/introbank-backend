@@ -100,12 +100,14 @@ var Twitter = {
         return acts;
     },
 
-    saveTwitterContribution: function(like, successCb, failCb) {
+    saveTwitterContribution: function(user, like, successCb, failCb) {
         var TwitterContribution = Parse.Object.extend('TwitterContribution');
         var contrib = new TwitterContribution();
+        contrib.set('user', {"__type": "Pointer", "className":user.className, "objectId":user.id});
         contrib.set('point', 10);
         contrib.set('type', 'like');
         contrib.set('targetTwitterId', like.user.id_str);
+        contrib.set('targetTwitterStatusId', like.id_str);
         contrib.save(null, {
             success: function(contrib) {
                 successCb(contrib);
@@ -147,29 +149,34 @@ var Twitter = {
      * @param type
      * @param target
      * @param successCb
-     * @param failCb
+    * @param failCb
      */
-    updateTwitterContribution : function(targetCol, target, twitterId, successCb, failCb) {
+    updateTwitterContribution : function(target, successCb, failCb) {
         var TwitterContribution = Parse.Object.extend("TwitterContribution");
-        var twitterContribQuery = new Parse.Query(TwitterContribution);
-        query.equalTo("targetTwitterId", twitterId);
-        twitterContribQuery.find({
-            success: function(results) {
-                if (results.lenght == 0){
+        var query = new Parse.Query(TwitterContribution);
+        query.equalTo("targetTwitterId", target.get("twitterId"));
+        query.find({
+            success: function(twitterContrib) {
+                if (twitterContrib.lenght == 0){
+                    console.log("twitterContrib has no recode.");
                     // to do delete contribute data recodes // 
                 }
-                for (var i = 0; i < results.length; i++) {
-                    var twitterContrib = new TwitterContribution();
-                    twitterContrib.set({targetCol:target});
-                    twitterContrib.save(results[i].id,{
-                        success:function(tiwtterContrib) {
-                            successCb(tiwtterContrib);
-                        },
-                        error:function(error) {
-                            failCb(error);
-                        }
-            })}},
-            error: function(error) {
+                var col = target.className.toLowerCase();
+                var data = {};
+                data[col] = {"__type": "Pointer", "className":target.className, "objectId":target.id};
+                for (var i = 0; i < twitterContrib.length; i++) {
+                    twitterContrib[i].set(data);
+                }
+                Parse.Object.saveAll(twitterContrib, {
+                    success:function(tiwtterContrib) {
+                        successCb(tiwtterContrib);
+                    },
+                    error:function(error) {
+                        console.log(error.message)
+                        failCb(error);
+                    }
+                });},
+            error: function(error){
                 failCb(error);
             }
         });
