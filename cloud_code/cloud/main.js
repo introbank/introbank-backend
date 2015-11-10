@@ -34,10 +34,9 @@ Parse.Cloud.job('collectTwitterLike', function(request, status) {
         Twitter.getLike(user, function(error, likes) {
             for (var i = 0; i < likes.length; i++) {
                 Twitter.saveTwitterContribution(user, likes[i], function(result) {
-                    //status.success("Success saving twitter contribution");
                     console.log("Success saving twitter contribution");
                 }, function(error) {
-                    status.error("Failed saving twitter contribution");
+                    console.log("Failed saving twitter contribution::" + error);
                 });
             }
         }, function(error, result) {
@@ -48,29 +47,45 @@ Parse.Cloud.job('collectTwitterLike', function(request, status) {
     }, function(error) {
         console.log("Query submission failed");
         status.error("Query failed");
-    })
-
+    });
 });
 
 Parse.Cloud.job('updateTwitterContribution', function(request, status) {
-    console.log("Started updating twitter contribution class");
+    console.log("Started update twitter contribution");
 
     Parse.Cloud.useMasterKey();
-    var targets = [{type:"group", query:new Parse.Query(Parse.Group)}, {type:"performer", query: new Parse.Query(Parse.Performer)}]
-    for (var i = 0; i < targets.lenght; i++){
-        targets[i].query.each(function(result) {
-            Twitter.updateTwitterContribution(targets[i].type, result.objectId, result.twitterId,
-                    function(result) {
-                        console.log("Success update twitter contribution. twitterId=" + result.twitterId);
-                    }, function(error) {
-                    status.error("Failed saving twitter contribution");
-                })}
-            ).then(function() {
-            status.success("Success saving twitter contribution");
-            console.log("Query submit success");
-            }, function(error) {
-                console.log("Query submission failed");
-                status.error("Query failed");
-            })
+    var Group = Parse.Object.extend("Group");
+    var Performer = Parse.Object.extend("Performer");
+
+    var types = ["group", "performer"];
+    // ここはParse.Promise.whenを使う予定： https://parse.com/docs/jp/js/guide
+    for (var i = 0; i < types.length; i++){
+
+        var query = null;
+        if (types[i] == "group"){
+          query = new Parse.Query(Group);
+        }
+        else if (types[i] == "performer"){
+          query = new Parse.Query(Performer);
+        }
+
+        query.each(function(target) {
+            console.log("Update twitter contribution. target.id=" + target.id);
+            console.log("Update twitter contribution. target.twitterId=" + target.get("twitterId"));
+
+            Twitter.updateTwitterContribution(target,
+                    function(responce){
+                        console.log("Success update twitter contribution");
+                    },
+                    function(error){
+                        console.log("Fail update twitter contribution");
+                    }
+                    );
+        }).then(function() {
+            //status.success("Success update twitter contribution");
+        }, function(error) {
+            console.log("Query submission failed");
+            //status.error("Query failed");
+        });
     }
 });

@@ -103,13 +103,20 @@ var Twitter = {
     saveTwitterContribution: function(user, like, successCb, failCb) {
         var TwitterContribution = Parse.Object.extend('TwitterContribution');
         var contrib = new TwitterContribution();
+        contrib.set('user', {"__type": "Pointer", "className":user.className, "objectId":user.id});
         contrib.set('point', 10);
         contrib.set('type', 'like');
         contrib.set('targetTwitterId', like.user.id_str);
         contrib.set('targetTwitterStatusId', like.id_str);
-        var u = new Parse.User(); u.id = user.id; contrib.set('user', u);
-        contrib.save(null, { success: function(contrib) { successCb(contrib);
-        }, error: function(error) { failCb(error); } }) },
+        contrib.save(null, {
+            success: function(contrib) {
+                successCb(contrib);
+            },
+            error: function(error) {
+                failCb(error);
+            }
+        })
+    },
     
     /** Save the contribution of given user into Contribution class.  @param
      * user @param successCb @param failCb
@@ -126,26 +133,44 @@ var Twitter = {
             success:function(contrib) { successCb(contrib); },
             error:function(error) { failCb(error); } }); },
 
-    /** Update the TwitterContribution by join Perfomer/Group on TwitterId
-     * @param type @param target @param successCb @param failCb
+    /**
+     * Update the TwitterContribution by join Perfomer/Group on TwitterId
+     * @param type
+     * @param target
+     * @param successCb
+     * @param failCb
      */
-    updateTwitterContribution : function(targetCol, target, twitterId,
-            successCb, failCb) { var TwitterContribution =
-                Parse.Object.extend("TwitterContribution"); var
-                    twitterContribQuery = new Parse.Query(TwitterContribution);
-                query.equalTo("targetTwitterId", twitterId);
-                twitterContribQuery.find({ success: function(results) { if
-                    (results.lenght == 0){
+    updateTwitterContribution : function(target, successCb, failCb) {
+        var TwitterContribution = Parse.Object.extend("TwitterContribution");
+        var query = new Parse.Query(TwitterContribution);
+        query.equalTo("targetTwitterId", target.get("twitterId"));
+        query.find({
+            success: function(twitterContrib) {
+                if (twitterContrib.lenght == 0){
+                    console.log("twitterContrib has no recode.");
                     // to do delete contribute data recodes // 
-                } for (var i = 0; i < results.length; i++) { var twitterContrib
-                    = new TwitterContribution();
-                    twitterContrib.set({targetCol:target});
-                    twitterContrib.save(results[i].id,{
-                        success:function(tiwtterContrib) {
-                            successCb(tiwtterContrib); }, error:function(error)
-                    { failCb(error); } })}}, error: function(error) {
-                                                                        failCb(error);
-                                                                    } }); }, };
+                }
+                var col = target.className.toLowerCase();
+                var data = {};
+                data[col] = {"__type": "Pointer", "className":target.className, "objectId":target.id};
+                for (var i = 0; i < twitterContrib.length; i++) {
+                    twitterContrib[i].set(data);
+                }
+                Parse.Object.saveAll(twitterContrib, {
+                    success:function(tiwtterContrib) {
+                        successCb(tiwtterContrib);
+                    },
+                    error:function(error) {
+                        console.log(error.message)
+                        failCb(error);
+                    }
+                });},
+            error: function(error){
+                failCb(error);
+            }
+        });
+    },
+};
 
 
 module.exports = Twitter;
