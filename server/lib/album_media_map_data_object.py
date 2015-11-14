@@ -4,16 +4,12 @@ from base_data_object import BaseDataObject
 class AlbumMediaMapDataObject(BaseDataObject):
     tableName = "AlbumMediaMap"
 
-    def insert(self, album, media, isViewable = True):
-        isViewableStr = self.getIsViewableString(isViewable)
-        objects = [{"__type": "Pointer", "className":"Album", "objectId":album}
-                , {"__type": "Pointer", "className":"Media", "objectId":media}]
+    def insert(self, albumId, mediaId, isViewable = False):
+        album = {"__type": "Pointer", "className":"Album", "objectId":albumId}
+        media =  {"__type": "Pointer", "className":"Media", "objectId":mediaId}
 
-        opponents = {"__op": "AddRelation", "objects": objects}
-        dataDict = {"opponents": opponents, "isViewable": isViewableStr}
-        return self._insert(dataDict)
-
-    @classmethod
-    def getIsViewableString(cls, isViewable):
-        return "true" if isViewable else "false"
+        dataDict = {"album": album, "media":media, "isViewable": isViewable}
+        res = self._insert(dataDict)
+        print res
+        return res
 

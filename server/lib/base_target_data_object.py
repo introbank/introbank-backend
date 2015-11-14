@@ -19,5 +19,5 @@ class BaseTargetDataObject(BaseDataObject):
         return {"objectIdList": objectIdList, "twitterIdList": twitterIdList}       
 
     @abstractmethod
-    def getInfoToInsertMedia(self):
+    def getInfoToTwitterStream(self):
         pass
