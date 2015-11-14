@@ -21,6 +21,7 @@ class MediaDataModel(BaseDataModel):
             ## insert AlbumMediaMap
             albumMediaMapDataObject = AlbumMediaMapDataObject(self.connection)
             albumMediaMapDataObject.insert(albumId, mediaId)
+            print "== insert done =="
 
             ## close
             self._close()

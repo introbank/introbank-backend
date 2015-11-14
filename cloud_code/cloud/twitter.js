@@ -148,7 +148,6 @@ var Twitter = {
             success: function(twitterContrib) {
                 if (twitterContrib.lenght == 0){
                     console.log("twitterContrib has no recode.");
-                    // to do delete contribute data recodes // 
                 }
                 var col = target.className.toLowerCase();
                 var data = {};
@@ -165,6 +164,37 @@ var Twitter = {
                         failCb(error);
                     }
                 });},
+            error: function(error){
+                failCb(error);
+            }
+        });
+    },
+
+    /**
+     * Delete TwitterContribution UseLess Recodes 
+     * @param type
+     * @param target
+     * @param successCb
+     * @param failCb
+     */
+    cleanTwitterContribution : function(user, successCb, failCb) {
+        var TwitterContribution = Parse.Object.extend("TwitterContribution");
+        var query = new Parse.Query(TwitterContribution);
+        // not introbank target records
+        query.equalTo("user", user).equalTo("group", null).equalTo("performer", null);
+        query.find({
+            success: function(twitterContrib) {
+                // delete
+                Parse.Object.destroyAll(twitterContrib, {
+                    success:function(tiwtterContrib) {
+                        successCb(tiwtterContrib);
+                    },
+                    error:function(error) {
+                        console.log(error.message)
+                        failCb(error);
+                    }
+                });
+            },
             error: function(error){
                 failCb(error);
             }
