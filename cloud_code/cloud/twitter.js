@@ -181,7 +181,7 @@ var Twitter = {
         var TwitterContribution = Parse.Object.extend("TwitterContribution");
         var query = new Parse.Query(TwitterContribution);
         // not introbank target records
-        query.equalTo("user", user.Id).equalTo("group", null).equalTo("performer", null);
+        query.equalTo("user", user).equalTo("group", null).equalTo("performer", null);
         query.find({
             success: function(twitterContrib) {
                 // delete
@@ -193,7 +193,8 @@ var Twitter = {
                         console.log(error.message)
                         failCb(error);
                     }
-                });},
+                });
+            },
             error: function(error){
                 failCb(error);
             }

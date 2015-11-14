@@ -96,7 +96,7 @@ Parse.Cloud.job('cleanTwitterContribution', function(request, status) {
     var query = new Parse.Query(Parse.User);
     query.each(function(user) {
         console.log("Clean twitter contribution. user.id=" + user.id);
-        Twitter.deleteTwitterContribution(user,
+        Twitter.cleanTwitterContribution(user,
             function(responce){
                 console.log("Success clean twitter contribution");
             },
