@@ -74,13 +74,13 @@ Parse.Cloud.job('updateTwitterContribution', function(request, status) {
             console.log("Update twitter contribution. target.twitterId=" + target.get("twitterId"));
 
             Twitter.updateTwitterContribution(target,
-                    function(responce){
-                        console.log("Success update twitter contribution");
-                    },
-                    function(error){
-                        console.log("Fail update twitter contribution");
-                    }
-                    );
+                function(responce){
+                    console.log("Success update twitter contribution");
+                },
+                function(error){
+                    console.log("Fail update twitter contribution");
+                }
+                );
         }).then(function() {
             //status.success("Success update twitter contribution");
         }, function(error) {
@@ -88,4 +88,26 @@ Parse.Cloud.job('updateTwitterContribution', function(request, status) {
             //status.error("Query failed");
         });
     }
+});
+
+Parse.Cloud.job('cleanTwitterContribution', function(request, status) {
+    console.log("Started clean twitter contribution");
+    Parse.Cloud.useMasterKey();
+    var query = new Parse.Query(Parse.User);
+    query.each(function(user) {
+        console.log("Clean twitter contribution. user.id=" + user.id);
+        Twitter.deleteTwitterContribution(user,
+            function(responce){
+                console.log("Success clean twitter contribution");
+            },
+            function(error){
+                console.log("Fail clean twitter contribution");
+            }
+            );
+    }).then(function() {
+        //status.success("Success update twitter contribution");
+    }, function(error) {
+        console.log("Query submission failed");
+        //status.error("Query failed");
+    });
 });
