@@ -123,7 +123,6 @@ Parse.Cloud.job('collectTwitterRetweet', function(request, status) {
         console.log("collect retweet. tweet.id=" + tweet.id);
         Twitter.getRetweeters(tweet.get("twitterStatusId")
             , function(error, retweeters){
-                console.log("*********")
                 Twitter.saveTwitterRetweetContribution(tweet, retweeters, function(){}, function(){});
             }
             , function(error) {

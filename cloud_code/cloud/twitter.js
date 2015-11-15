@@ -47,7 +47,8 @@ var Twitter = {
      * @param cbFail
      */
     getRetweeters : function(statusId, cbSuccess, cbFail) {
-        var url = "https://api.twitter.com/1.1/statuses/retweeters/" + statusId + ".json";
+        console.log("+++++++++++++++++++++");
+        var url = "https://api.twitter.com/1.1/statuses/retweeters/ids.json";
 
         Parse.Cloud.httpRequest({
             url: url,
@@ -56,6 +57,7 @@ var Twitter = {
                 "Authorization": Twitter.getIntroAppSignature(url)
             },
             params: {
+                id : statusId
             }
         }).then(function (res) {
             // In case of request success, save his contribution
@@ -186,13 +188,13 @@ var Twitter = {
     },
     
     saveTwitterRetweetContribution: function(tweet, retweeters, successCb, failCb){
-        console.log("+++++++++++++++++++++");
         var userQuery = new Parse.Query(Parse.User);
         for (var i = 0; i < retweeters.length; i++){
             console.log(retweeters.id_str);
             tmp = new Parse.Query(Parse.User); 
             userQuery = Parse.Query.or(userQuery, tmp.equalTo("twitterId", retweeters.id_str));
         }
+
         userQuery.find({
                 success: function(user){
                     var TwitterContribution = Parse.Object.extend('TwitterContribution');
