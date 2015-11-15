@@ -33,7 +33,7 @@ Parse.Cloud.job('collectTwitterLike', function(request, status) {
     query.each(function(user) {
         Twitter.getLike(user, function(error, likes) {
             for (var i = 0; i < likes.length; i++) {
-                Twitter.saveTwitterContribution(user, likes[i], function(result) {
+                Twitter.saveTwitterLikeContribution(user, likes[i], function(result) {
                     console.log("Success saving twitter contribution");
                 }, function(error) {
                     console.log("Failed saving twitter contribution::" + error);
@@ -110,4 +110,29 @@ Parse.Cloud.job('cleanTwitterContribution', function(request, status) {
         console.log("Query submission failed");
         //status.error("Query failed");
     });
+});
+
+Parse.Cloud.job('collectTwitterRetweet', function(request, status) {
+    console.log("Started collect twitter retweet contribution");
+    Parse.Cloud.useMasterKey();
+    var Tweet = Parse.Object.extend("Tweet");
+    var query = new Parse.Query(Tweet);
+
+    query.equalTo("isReflected", false).equalTo("retweetCount", null);
+    query.each(function(tweet) {
+        console.log("collect retweet. tweet.id=" + tweet.id);
+        Twitter.getRetweeters(tweet.get("twitterStatusId")
+            , function(error, retweeters){
+                console.log("*********")
+                Twitter.saveTwitterRetweetContribution(tweet, retweeters, function(){}, function(){});
+            }
+            , function(error) {
+                console.log(error);
+            }
+        );
+    }
+        , function(error){
+            console.log(error);
+        }
+    );
 });

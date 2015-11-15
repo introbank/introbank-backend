@@ -77,7 +77,6 @@ class TwitterDataStreaming(object):
 
         print "follow::" + ",".join(self.follow)
         print "track::" + ",".join(self.track)
-        print self.twitterIdInfo
 
     def start(self):
         print "start main streaming proc"
@@ -93,18 +92,17 @@ class TwitterDataStreaming(object):
                 if classInfo is not None:
                     print "::" + twitterId + "::" + twitterStatusId + "::" + text
                     tweetDataModel = TweetDataModel(self.connection)
-                    tweetDataModel.insertTweetData(twitterId, twitterStatusId, classInfo.name, classInfo.objectId)
+                    tweetObjectId = tweetDataModel.insertTweetData(twitterId, twitterStatusId, text, classInfo.name, classInfo.objectId)
             except Exception as e:
-                pass
+                continue
             ## insert Album
             try:
                 mediaList = item["entities"]["media"]
                 for media in mediaList:
-                    print media
                     mediaDataModel = MediaDataModel(self.connection)
                     
                     for album in self.getAlbumIdList(twitterId):
-                        res = mediaDataModel.insertNewMedia(album, twitterId, twitterStatusId, media['media_url_https'], text)
+                        res = mediaDataModel.insertNewMedia(album, twitterId, twitterStatusId, media['media_url_https'], tweetObjectId)
             except (KeyError, BrankMediaData):
                 pass
 
