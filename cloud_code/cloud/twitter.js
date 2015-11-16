@@ -61,7 +61,6 @@ var Twitter = {
             }
         }).then(function (res) {
             // In case of request success, save his contribution
-            // into Contribution class in Parse DB.
             cbSuccess(null, res.data);
         }, function (res) {
             // In case of request failed
@@ -77,9 +76,7 @@ var Twitter = {
      */
     getIntroAppSignature : function(url) {
         var nonce = OAuth.nonce(32);
-        var ts = Math.floor(new Date().getTime() / 1000);
-        var timestamp = ts.toString();
-
+        var timestamp = OAuth.timestamp();
         var accessor = {
             "consumerSecret": IntroApp.CONSUMER_SECRET,
             "tokenSecret": IntroApp.ACCESS_TOKEN_SECRET
@@ -110,6 +107,7 @@ var Twitter = {
         var encodedSig = OAuth.percentEncode(sig);
 
         return 'OAuth oauth_consumer_key="'+consumerKey+'", oauth_nonce=' + nonce + ', oauth_signature=' + encodedSig + ', oauth_signature_method="HMAC-SHA1", oauth_timestamp=' + timestamp + ',oauth_token="'+authToken+'", oauth_version="1.0"';
+
     },
 
     /**
