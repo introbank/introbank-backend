@@ -121,7 +121,12 @@ Parse.Cloud.job('collectTwitterRetweet', function(request, status) {
     query.equalTo("isReflected", false).equalTo("retweetCount", null);
     query.each(function(tweet) {
         console.log("collect retweet. tweet.id=" + tweet.id);
-        Twitter.getRetweeters(tweet.get("twitterStatusId")
+        var url = "https://api.twitter.com/1.1/statuses/retweeters/ids.json";
+        //var statusId = tweet.get("twitterStatusId");
+        var statusId = "327473909412814850";
+        var auth = Twitter.createIntroAppSignature(url, [statusId]);
+
+        Twitter.getRetweeters(auth.url, auth.header, statusId
             , function(error, retweeters){
                 Twitter.saveTwitterRetweetContribution(tweet, retweeters, function(){}, function(){});
             }

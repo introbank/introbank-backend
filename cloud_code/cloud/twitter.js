@@ -46,19 +46,18 @@ var Twitter = {
      * @param cbSuccess
      * @param cbFail
      */
-    getRetweeters : function(statusId, cbSuccess, cbFail) {
+    getRetweeters : function(url, header, statusId, cbSuccess, cbFail) {
         console.log("+++++++++++++++++++++");
-        var url = "https://api.twitter.com/1.1/statuses/retweeters/ids.json";
-
+        console.log(header);
         Parse.Cloud.httpRequest({
             url: url,
             followRedirects: true,
             headers: {
-                "Authorization": Twitter.getIntroAppSignature(url)
-            },
-            params: {
-                id : statusId
+                "Authorization": header
             }
+            //params: {
+            //    id : statusId
+            //}
         }).then(function (res) {
             // In case of request success, save his contribution
             cbSuccess(null, res.data);
@@ -286,6 +285,58 @@ var Twitter = {
             }
         });
     },
+
+    /**
+     * Create OAuth 2.0 signature for Twitter API v1.1
+     * @param url
+     * @param consumerSecret
+     * @returns {string}
+     */
+    createIntroAppSignature : function(actionUrl, idList) {
+        var accessor = {
+            "consumerSecret": IntroApp.CONSUMER_SECRET,
+            "tokenSecret": IntroApp.ACCESS_TOKEN_SECRET
+        };
+        
+        var nonce = OAuth.nonce(32);
+        var ts = Math.floor(new Date().getTime() / 1000);
+        var timestamp = ts.toString();
+
+        var consumerKey = IntroApp.CONSUMER_KEY;
+        var authToken = IntroApp.ACCESS_TOKEN_KEY;
+
+        var params = {
+            "stringify_ids": "true",
+            "id": idList.join(','),
+            // ouths
+            oauth_version: "1.0",
+            oauth_consumer_key: consumerKey,
+            oauth_token: authToken,
+            oauth_timestamp: timestamp,
+            oauth_nonce: nonce,
+            oauth_signature_method: "HMAC-SHA1"
+        };
+
+        var message = {
+            method: "GET",
+            action: actionUrl,
+            parameters: params
+        };
+
+        OAuth.SignatureMethod.sign(message, accessor);
+        var normPar = OAuth.SignatureMethod.normalizeParameters(message.parameters);
+        var baseString = OAuth.SignatureMethod.getBaseString(message);
+        var sig = OAuth.getParameter(message.parameters, "oauth_signature") + "=";
+        var encodedSig = OAuth.percentEncode(sig);
+
+        var url = OAuth.addToURL(message.action, message.parameters);
+        var header = "OAuth " + OAuth.getAuthorizationHeader("", message.parameters);
+        header = header.replace('exports realm="",','');
+
+        return {url:url, header: header};
+    },
+
+ 
 };
 
 
