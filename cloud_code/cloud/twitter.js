@@ -247,7 +247,7 @@ var Twitter = {
         var TwitterContribution = Parse.Object.extend("TwitterContribution");
         var query = new Parse.Query(TwitterContribution);
         // not introbank target records
-        query.equalTo("user", user).equalTo("group", null).equalTo("performer", null);
+        query.equalTo("user", user).equalTo("group", null).equalTo("artist", null);
         query.find({
             success: function(twitterContrib) {
                 // delete

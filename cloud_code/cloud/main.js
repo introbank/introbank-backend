@@ -55,9 +55,9 @@ Parse.Cloud.job('updateTwitterContribution', function(request, status) {
 
     Parse.Cloud.useMasterKey();
     var Group = Parse.Object.extend("Group");
-    var Performer = Parse.Object.extend("Performer");
+    var Artist = Parse.Object.extend("Artist");
 
-    var types = ["group", "performer"];
+    var types = ["group", "artist"];
     // ここはParse.Promise.whenを使う予定： https://parse.com/docs/jp/js/guide
     for (var i = 0; i < types.length; i++){
 
@@ -65,8 +65,8 @@ Parse.Cloud.job('updateTwitterContribution', function(request, status) {
         if (types[i] == "group"){
           query = new Parse.Query(Group);
         }
-        else if (types[i] == "performer"){
-          query = new Parse.Query(Performer);
+        else if (types[i] == "artist"){
+          query = new Parse.Query(Artist);
         }
 
         query.each(function(target) {

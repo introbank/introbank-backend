@@ -2,7 +2,7 @@
 import sys, os 
 sys.path.append('{0}/../lib'.format(os.path.dirname(os.path.abspath(__file__))))
 from twitter_stream import TwitterStream
-from performer_data_object import PerformerDataObject
+from artist_data_object import ArtistDataObject
 from group_data_object import GroupDataObject
 from media_data_model import MediaDataModel
 from tweet_data_model import TweetDataModel
@@ -54,19 +54,19 @@ class TwitterDataStreaming(object):
 
     def setup(self):
         ## data from DB
-        performerDataObject = PerformerDataObject(self.connection)
+        artistDataObject = ArtistDataObject(self.connection)
         groupDataObject = GroupDataObject(self.connection)
 
         ## start 
         self.connection.connect()
-        performerData = performerDataObject.getInfoToTwitterStream()
+        artistData = artistDataObject.getInfoToTwitterStream()
         groupData = groupDataObject.getInfoToTwitterStream()
         self.connection.close()
         ## end
 
-        for performer in performerData:
-            self.follow.append(performer["twitterId"])
-            self.twitterIdInfo[performer["twitterId"]] = {"albumId":performer["album"], "classInfo":ParseClassInfo("Performer", performer["objectId"])}
+        for artist in artistData:
+            self.follow.append(artist["twitterId"])
+            self.twitterIdInfo[artist["twitterId"]] = {"albumId":artist["album"], "classInfo":ParseClassInfo("Artist", artist["objectId"])}
 
         for group in groupData:
             self.follow.append(group["twitterId"])

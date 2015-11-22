@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 from base_target_data_object import BaseTargetDataObject
 
-class PerformerDataObject(BaseTargetDataObject):
-    tableName = "Performer"
+class ArtistDataObject(BaseTargetDataObject):
+    tableName = "Artist"
 
     def getInfoToTwitterStream(self):
         infoList = []
