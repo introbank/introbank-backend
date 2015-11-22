@@ -46,24 +46,24 @@ var Twitter = {
      * @param cbSuccess
      * @param cbFail
      */
-    getRetweeters : function(url, header, statusId, cbSuccess, cbFail) {
-        console.log("+++++++++++++++++++++");
-        console.log(header);
+    getUserTimeline : function(user, cbSuccess, cbFail) {
+        var url = "https://api.twitter.com/1.1/statuses/user_timeline.json";
+        var authData = Twitter._extractAuthData(user);
+
         Parse.Cloud.httpRequest({
             url: url,
             followRedirects: true,
             headers: {
-                "Authorization": header
+                "Authorization": Twitter.getOAuthSignature(url, authData.screenName,
+                    authData.authToken, authData.authTokenSecret, authData.consumerKey, authData.consumerSecret)
+            },
+            params: {
+                screen_name: authData.screenName
             }
-            //params: {
-            //    id : statusId
-            //}
         }).then(function (res) {
-            // In case of request success, save his contribution
             cbSuccess(null, res.data);
         }, function (res) {
-            // In case of request failed
-            cbFail(res.text);
+            cbFail(res.text, "Failed");
         });
     },
 
@@ -136,12 +136,9 @@ var Twitter = {
             "oauth_token": authToken,
             "oauth_timestamp": timestamp,
             "oauth_nonce": nonce,
-            "oauth_signature_method": "HMAC-SHA1"
+            "oauth_signature_method": "HMAC-SHA1",
+            "screen_name": screenName
         };
-
-        if(screenName != null){
-            params["screen_name"] = screenName;
-        }
 
         var message = {
             "method": "GET",
@@ -184,38 +181,22 @@ var Twitter = {
         })
     },
     
-    saveTwitterRetweetContribution: function(tweet, retweeters, successCb, failCb){
-        var userQuery = new Parse.Query(Parse.User);
-        for (var i = 0; i < retweeters.length; i++){
-            console.log(retweeters.id_str);
-            tmp = new Parse.Query(Parse.User); 
-            userQuery = Parse.Query.or(userQuery, tmp.equalTo("twitterId", retweeters.id_str));
-        }
-
-        userQuery.find({
-                success: function(user){
-                    var TwitterContribution = Parse.Object.extend('TwitterContribution');
-                    var contrib = new TwitterContribution();
-                    contrib.set('point', 20);
-                    contrib.set('type', 'retweet');
-                    contrib.set('tweet', 'tweet');
-                    contrib.ddUnique('user', user);
-                    if(user.length > 0){
-                        Parse.Object.saveAll(contrib, {
-                            success:function(contrib) {
-                                successCb(contrib);
-                            },
-                            error:function(error) {
-                                console.log(error.message);
-                                failCb(error);
-                            }
-                        });                             
-                    }
-                },
-                error: function(error){
-                    console.log(error.message);
-                }
-        });
+    saveTwitterContribution: function(user, type, point, tweet, successCb, failCb){
+        var TwitterContribution = Parse.Object.extend('TwitterContribution');
+        var contrib = new TwitterContribution();
+        contrib.set('user', {"__type": "Pointer", "className":user.className, "objectId":user.id});
+        contrib.set('point', point);
+        contrib.set('type', type);
+        contrib.set('targetTwitterId', tweet.user.id_str);
+        contrib.set('targetTwitterStatusId', tweet.id_str);
+        contrib.save(null, {
+            success: function(contrib) {
+                successCb(contrib);
+            },
+            error: function(error) {
+                failCb(error);
+            }
+        })
     },
 
     /**
@@ -285,58 +266,6 @@ var Twitter = {
             }
         });
     },
-
-    /**
-     * Create OAuth 2.0 signature for Twitter API v1.1
-     * @param url
-     * @param consumerSecret
-     * @returns {string}
-     */
-    createIntroAppSignature : function(actionUrl, idList) {
-        var accessor = {
-            "consumerSecret": IntroApp.CONSUMER_SECRET,
-            "tokenSecret": IntroApp.ACCESS_TOKEN_SECRET
-        };
-        
-        var nonce = OAuth.nonce(32);
-        var ts = Math.floor(new Date().getTime() / 1000);
-        var timestamp = ts.toString();
-
-        var consumerKey = IntroApp.CONSUMER_KEY;
-        var authToken = IntroApp.ACCESS_TOKEN_KEY;
-
-        var params = {
-            "stringify_ids": "true",
-            "id": idList.join(','),
-            // ouths
-            oauth_version: "1.0",
-            oauth_consumer_key: consumerKey,
-            oauth_token: authToken,
-            oauth_timestamp: timestamp,
-            oauth_nonce: nonce,
-            oauth_signature_method: "HMAC-SHA1"
-        };
-
-        var message = {
-            method: "GET",
-            action: actionUrl,
-            parameters: params
-        };
-
-        OAuth.SignatureMethod.sign(message, accessor);
-        var normPar = OAuth.SignatureMethod.normalizeParameters(message.parameters);
-        var baseString = OAuth.SignatureMethod.getBaseString(message);
-        var sig = OAuth.getParameter(message.parameters, "oauth_signature") + "=";
-        var encodedSig = OAuth.percentEncode(sig);
-
-        var url = OAuth.addToURL(message.action, message.parameters);
-        var header = "OAuth " + OAuth.getAuthorizationHeader("", message.parameters);
-        header = header.replace('exports realm="",','');
-
-        return {url:url, header: header};
-    },
-
- 
 };
 
 
