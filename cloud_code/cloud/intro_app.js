@@ -1,0 +1,9 @@
+var IntroApp = {
+    CONSUMER_KEY : "em7M7qW6NoKhCf9PPGvaLWfmA",
+    CONSUMER_SECRET : "IH4iEnUVPB7BaSFNUGzfuoGPN6FZawawTqbXs619zopyu9E36U",
+    ACCESS_TOKEN_KEY : "3699404474-vtxVqJYgmLCWb6faxBMkXQ2gMVT4GY8gNX79uNW",
+    ACCESS_TOKEN_SECRET : "H6vFgTSHAEfTJuZBTsBSSMrfjFQZGfHJICyXUf6dmArr2",
+};
+
+module.exports = IntroApp;
+

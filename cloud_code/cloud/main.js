@@ -33,7 +33,7 @@ Parse.Cloud.job('collectTwitterLike', function(request, status) {
     query.each(function(user) {
         Twitter.getLike(user, function(error, likes) {
             for (var i = 0; i < likes.length; i++) {
-                Twitter.saveTwitterContribution(user, likes[i], function(result) {
+                Twitter.saveTwitterContribution(user, "like", 10, likes[i], function(result) {
                     console.log("Success saving twitter contribution");
                 }, function(error) {
                     console.log("Failed saving twitter contribution::" + error);
@@ -109,5 +109,34 @@ Parse.Cloud.job('cleanTwitterContribution', function(request, status) {
     }, function(error) {
         console.log("Query submission failed");
         //status.error("Query failed");
+    });
+});
+
+Parse.Cloud.job('collectTwitterRetweet', function(request, status) {
+    console.log("Started collecting twitter retweet");
+    Parse.Cloud.useMasterKey();
+
+    var query = new Parse.Query(Parse.User);
+    query.each(function(user) {
+        Twitter.getUserTimeline(user, function(error, tweets) {
+            for (var i = 0; i < tweets.length; i++) {
+                if(tweets[i].retweeted == true){
+                    Twitter.saveTwitterContribution(user, "retweet", 20, tweets[i].retweeted_status, 
+                    function(result) {
+                        console.log("Success saving twitter contribution");
+                    }
+                , function(error) {
+                    console.log("Failed saving twitter contribution::" + error);
+                });
+                }
+            }
+        }, function(error, result) {
+
+        });
+    }).then(function() {
+        console.log("Query submit success");
+    }, function(error) {
+        console.log("Query submission failed");
+        status.error("Query failed");
     });
 });

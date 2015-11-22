@@ -9,7 +9,6 @@ class GroupDataObject(BaseTargetDataObject):
         response = self._select(queryDict={"keys":"twitterId,album,hashtag"})
         try:
             for data in response["results"]:
-                print data
                 infoList.append({"objectId": data["objectId"], "twitterId":data["twitterId"],  "album":data["album"]["objectId"], "hashtag":GroupDataObject.cleanupHashtag(data["hashtag"])})
         except KeyError as e:
             raise Exception(e)
