@@ -1,4 +1,6 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
+
 import sys, os 
 import threading
 sys.path.append('{0}/../lib'.format(os.path.dirname(os.path.abspath(__file__))))
