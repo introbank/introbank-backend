@@ -70,48 +70,6 @@ var Twitter = {
     /**
      * Create OAuth 2.0 signature for Twitter API v1.1
      * @param url
-     * @param consumerSecret
-     * @returns {string}
-     */
-    getIntroAppSignature : function(url) {
-        var nonce = OAuth.nonce(32);
-        var timestamp = OAuth.timestamp();
-        var accessor = {
-            "consumerSecret": IntroApp.CONSUMER_SECRET,
-            "tokenSecret": IntroApp.ACCESS_TOKEN_SECRET
-        };
-
-        var consumerKey = IntroApp.CONSUMER_KEY;
-        var authToken = IntroApp.ACCESS_TOKEN_KEY;
-
-        var params = {
-            "oauth_version": "1.0",
-            "oauth_consumer_key": consumerKey,
-            "oauth_token": authToken,
-            "oauth_timestamp": timestamp,
-            "oauth_nonce": nonce,
-            "oauth_signature_method": "HMAC-SHA1"
-        };
-
-        var message = {
-            "method": "GET",
-            "action": url,
-            "parameters": params
-        };
-
-        OAuth.SignatureMethod.sign(message, accessor);
-        var normPar = OAuth.SignatureMethod.normalizeParameters(message.parameters);
-        var baseString = OAuth.SignatureMethod.getBaseString(message);
-        var sig = OAuth.getParameter(message.parameters, "oauth_signature") + "=";
-        var encodedSig = OAuth.percentEncode(sig);
-
-        return 'OAuth oauth_consumer_key="'+consumerKey+'", oauth_nonce=' + nonce + ', oauth_signature=' + encodedSig + ', oauth_signature_method="HMAC-SHA1", oauth_timestamp=' + timestamp + ',oauth_token="'+authToken+'", oauth_version="1.0"';
-
-    },
-
-    /**
-     * Create OAuth 2.0 signature for Twitter API v1.1
-     * @param url
      * @param screenName
      * @param authToken
      * @param authTokenSecret
@@ -155,32 +113,6 @@ var Twitter = {
         return 'OAuth oauth_consumer_key="'+consumerKey+'", oauth_nonce=' + nonce + ', oauth_signature=' + encodedSig + ', oauth_signature_method="HMAC-SHA1", oauth_timestamp=' + timestamp + ',oauth_token="'+authToken+'", oauth_version="1.0"';
     },
 
-    /**
-     * save TwitterContribution tweet, users 
-     * @param type
-     * @param target
-     * @param successCb
-     * @param failCb
-     */
-
-    saveTwitterLikeContribution: function(user, like, successCb, failCb) {
-        var TwitterContribution = Parse.Object.extend('TwitterContribution');
-        var contrib = new TwitterContribution();
-        contrib.set('user', {"__type": "Pointer", "className":user.className, "objectId":user.id});
-        contrib.set('point', 10);
-        contrib.set('type', 'like');
-        contrib.set('targetTwitterId', like.user.id_str);
-        contrib.set('targetTwitterStatusId', like.id_str);
-        contrib.save(null, {
-            success: function(contrib) {
-                successCb(contrib);
-            },
-            error: function(error) {
-                failCb(error);
-            }
-        })
-    },
-    
     saveTwitterContribution: function(user, type, point, tweet, successCb, failCb){
         var TwitterContribution = Parse.Object.extend('TwitterContribution');
         var contrib = new TwitterContribution();
