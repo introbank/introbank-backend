@@ -121,6 +121,10 @@ class TwitterDataStreaming(object):
         return self.running.isSet()
 
     def start(self):
+        if self.check():
+            print "already proc running"
+            exit(1)
+
         print "start main streaming proc..."
         self.running.set()
         self.thread.start()
@@ -129,6 +133,14 @@ class TwitterDataStreaming(object):
         self.running.clear()
         print "stop main steraming proc..."
         self.thread.join()
+
+    def check(self):
+        if self.thread.isAlive():
+            print "main steraming proc is alive"
+            return True
+        else:
+            print "main steraming proc is not alive"
+            return False
 
     def _validate(cls, media):
         for key in ['source_user_id', 'source_status_id_str', 'media_url']:
@@ -144,4 +156,3 @@ if __name__ == '__main__':
     streaming = TwitterDataStreaming()
     streaming.setup()    
     streaming.start()
-    streaming.stop()
