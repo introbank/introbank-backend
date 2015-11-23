@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import sys, os 
+import threading
 sys.path.append('{0}/../lib'.format(os.path.dirname(os.path.abspath(__file__))))
 from twitter_stream import TwitterStream
 from artist_data_object import ArtistDataObject
@@ -22,6 +23,8 @@ class TwitterDataStreaming(object):
         self.follow = []
         self.twitterIdInfo = {}
         self.hashtagAlbumIdMap = {}
+        self.running = threading.Event()
+        self.thread = threading.Thread(target = self.main)
 
     def twitterId2AlbumId(self, twitterId):
         try:
@@ -78,8 +81,10 @@ class TwitterDataStreaming(object):
         print "follow::" + ",".join(self.follow)
         print "track::" + ",".join(self.track)
 
-    def start(self):
-        print "start main streaming proc"
+
+
+    def main(self):
+        print "main start"
         for item in TwitterStream.get(follow=self.follow, track=self.track):
             ## insert TweetId
             try:
@@ -105,6 +110,23 @@ class TwitterDataStreaming(object):
                         res = mediaDataModel.insertNewMedia(album, twitterId, twitterStatusId, media['media_url_https'], tweetObjectId)
             except (KeyError, BrankMediaData):
                 pass
+        
+            if not self.isRunning():
+                print "stop main steraming"
+                exit(0)
+
+    def isRunning(self):
+        return self.running.isSet()
+
+    def start(self):
+        print "start main streaming proc..."
+        self.running.set()
+        self.thread.start()
+
+    def stop(self):
+        self.running.clear()
+        print "stop main steraming proc..."
+        self.thread.join()
 
     def _validate(cls, media):
         for key in ['source_user_id', 'source_status_id_str', 'media_url']:
@@ -120,3 +142,4 @@ if __name__ == '__main__':
     streaming = TwitterDataStreaming()
     streaming.setup()    
     streaming.start()
+    streaming.stop()
