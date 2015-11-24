@@ -18,6 +18,7 @@ class GroupDataObject(BaseTargetDataObject):
     @classmethod
     def cleanupHashtag(cls, hashtag):
         ## clean "#" at first
+        hashtag = hashtag.encode("utf-8")
         return "#{0}".format(hashtag.replace("#", ''))
 
 
