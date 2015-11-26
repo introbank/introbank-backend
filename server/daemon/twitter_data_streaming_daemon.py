@@ -8,11 +8,9 @@ sys.path.append('{0}/../script'.format(os.path.dirname(os.path.abspath(__file__)
 from twitter_data_streaming import TwitterDataStreaming
 
 class TwitterDataStreamingDaemon(object):
-    def __init__(self, minutes, debugMode = False):
+    def __init__(self, minutes):
        self.minutes = int(minutes)
        self.thread = threading.Thread(name=self.__class__.__name__, target=self.proc) 
-       if debugMode is False:
-           self.thread.setDaemon(True)
 
     def start(self):
         print "TwitterDataStreamingDaemon start"
@@ -26,21 +24,18 @@ class TwitterDataStreamingDaemon(object):
             print "main proc"
             streaming.setup()    
             streaming.start()
+            print "sleep {0}sec".format(str(sec))
             time.sleep(sec)
             streaming.stop()
         
 if __name__ == '__main__':
     args = sys.argv
     interval = 0
-    debugMode = False
     if len(args) == 2:
         interval = args[1]
-    elif len(args) == 3:
-        interval = args[1]
-        debugMode = True
     else:
         print "error:: 1st arg: interval(minutes), 2nd: debug"
         exit(1)
 
-    daemon = TwitterDataStreamingDaemon(interval, debugMode)
+    daemon = TwitterDataStreamingDaemon(interval)
     daemon.start()

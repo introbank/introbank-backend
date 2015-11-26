@@ -11,6 +11,16 @@ class TwitterStream(object):
             yield item
                             
 if __name__ == '__main__':
-    target = "#nhk"
-    for item in TwitterStream.get(track=[target]):
-        print item
+    follow = "3699404474"
+    for item in TwitterStream.get(follow=[follow]):
+        print item["text"]
+        try:
+            print "media"
+            for media in item["entities"]["media"]:
+                print media
+            print "multi media"
+            for media in item["extended_entities"]["media"]:
+                print media
+
+        except KeyError:
+            print item["entities"]

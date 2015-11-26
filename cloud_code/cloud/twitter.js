@@ -58,7 +58,8 @@ var Twitter = {
                     authData.authToken, authData.authTokenSecret, authData.consumerKey, authData.consumerSecret)
             },
             params: {
-                screen_name: authData.screenName
+                screen_name: authData.screenName,
+                count: 200
             }
         }).then(function (res) {
             cbSuccess(null, res.data);

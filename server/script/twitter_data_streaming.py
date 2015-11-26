@@ -104,7 +104,7 @@ class TwitterDataStreaming(object):
                 continue
             ## insert Album
             try:
-                mediaList = item["entities"]["media"]
+                mediaList = item["extended_entities"]["media"]
                 for media in mediaList:
                     mediaDataModel = MediaDataModel(self.connection)
                     
