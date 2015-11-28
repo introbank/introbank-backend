@@ -23,9 +23,9 @@ var Twitter = {
         var sinceId = null;
         var key = "favoritesListSinceId";
         if (offsetData && key in offsetData){
-            sinceId = user.get("twitterApiOffset")[key];
+            sinceId = offsetData[key];
         }
-        Twitter.httpUserOAuthedRequest(user, url, null, cbSuccess, cbFail);
+        Twitter.httpUserOAuthedRequest(user, url, sinceId, cbSuccess, cbFail);
     },
     
     /**
@@ -39,11 +39,37 @@ var Twitter = {
         var sinceId = null;
         var key = "usertimelineSinceId";
         if (offsetData && key in offsetData){
-            sinceId = user.get("twitterApiOffset")[key];
+            sinceId = offsetData[key];
         }
         Twitter.httpUserOAuthedRequest(user, url, sinceId, cbSuccess, cbFail);
     },
 
+    saveTwitterApiOffset : function(user, data, successCb, failCb){
+        var TwitterApiOffset = Parse.Object.extend("TwitterApiOffset");
+        var query = new Parse.Query(TwitterApiOffset);
+        // not introbank target records
+        query.equalTo("user", user);
+        query.find({
+            success: function(twitterApiOffset) {
+                console.log("twitterApiOffset:: user" + twitterApiOffset.get("user"));
+                Object.keys(data).forEach(function(key) {
+                    var value = this[key];
+                    twitterApiOffset.set(key, String(value));
+                }, twitterApiOffset);
+                twitterApiOffset.save(null, {
+                    success: function(res) {
+                        successCb(res);
+                    },
+                    error: function(error) {
+                        failCb(error);
+                    }
+                });
+            },
+            error: function(error){
+                failCb(error);
+            }
+        });
+    },
     /**
      * Create OAuth 2.0 signature for Twitter API v1.1
      * @param url
@@ -205,7 +231,7 @@ var Twitter = {
         });
     },
 
-    unCodeSample : function(url, params, authTokenSecret,
+    unCodeSample : function(url, params, authToken, authTokenSecret,
                                      consumerKey, consumerSecret) {
         var nonce = OAuth.nonce(32);
         var ts = Math.floor(new Date().getTime() / 1000);
