@@ -205,7 +205,38 @@ var Twitter = {
         });
     },
 
+    unCodeSample : function(url, params, authTokenSecret,
+                                     consumerKey, consumerSecret) {
+        var nonce = OAuth.nonce(32);
+        var ts = Math.floor(new Date().getTime() / 1000);
+        var timestamp = ts.toString();
 
+        var accessor = {
+            "consumerSecret": consumerSecret,
+            "tokenSecret": authTokenSecret
+        };
+
+        params["oauth_version"] = "1.0";
+        params["oauth_consumer_key"] = consumerKey;
+        params["oauth_token"] = authToken;
+        params["oauth_timestamp"] = timestamp;
+        params["oauth_nonce"] = nonce;
+        params["oauth_signature_method"] = "HMAC-SHA1";
+
+        var message = {
+            "method": "GET",
+            "action": url,
+            "parameters": params
+        };
+
+        OAuth.SignatureMethod.sign(message, accessor);
+        var normPar = OAuth.SignatureMethod.normalizeParameters(message.parameters);
+        var baseString = OAuth.SignatureMethod.getBaseString(message);
+        var sig = OAuth.getParameter(message.parameters, "oauth_signature") + "=";
+        var encodedSig = OAuth.percentEncode(sig);
+
+        return 'OAuth oauth_consumer_key="'+consumerKey+'", oauth_nonce=' + nonce + ', oauth_signature=' + encodedSig + ', oauth_signature_method="HMAC-SHA1", oauth_timestamp=' + timestamp + ',oauth_token="'+authToken+'", oauth_version="1.0"';
+    }
 };
 
 
