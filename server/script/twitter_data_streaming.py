@@ -47,13 +47,15 @@ class TwitterDataStreaming(object):
         except KeyError:
             return None
     
-    def getAlbumIdList(self, twitterId = None, hashtag = None):
+    def getAlbumIdList(self, twitterId = None, hashtags = []):
         albumIdList = [] 
         if self.twitterId2AlbumId(twitterId) is not None:
             albumIdList.append(self.twitterId2AlbumId(twitterId))
 
-        if self.hashtag2AlbumId(twitterId) is not None:
-            albumIdList.append(self.hashtag2AlbumId(twitterId))
+        for hashtagInfo in hashtags:
+            hashtag = "#" + hashtagInfo["text"]
+            if self.hashtag2AlbumId(hashtag) is not None:
+                albumIdList.append(self.hashtag2AlbumId(hashtag))
 
         return albumIdList
 
@@ -105,10 +107,11 @@ class TwitterDataStreaming(object):
             ## insert Album
             try:
                 mediaList = item["extended_entities"]["media"]
+                hashtags = item["entities"]["hashtags"]
                 for media in mediaList:
                     mediaDataModel = MediaDataModel(self.connection)
                     
-                    for album in self.getAlbumIdList(twitterId):
+                    for album in self.getAlbumIdList(twitterId, hashtags):
                         res = mediaDataModel.insertNewMedia(album, twitterId, twitterStatusId, media['media_url_https'], tweetObjectId)
             except (KeyError, BrankMediaData):
                 pass

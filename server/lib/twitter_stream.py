@@ -15,12 +15,12 @@ if __name__ == '__main__':
     for item in TwitterStream.get(follow=[follow]):
         print item["text"]
         try:
-            print "media"
-            for media in item["entities"]["media"]:
-                print media
-            print "multi media"
-            for media in item["extended_entities"]["media"]:
-                print media
+            for hashtag in item["entities"]["hashtags"]:
+                print "hashtag"
+                print hashtag["text"]
+            #print "multi media"
+            #for media in item["extended_entities"]["media"]:
+            #    print media["media_url_https"]
 
         except KeyError:
             print item["entities"]
