@@ -73,15 +73,14 @@ var Twitter = {
                     twitterApiOffset.set(key, value);
                 }
                 twitterApiOffset.save(null, {
-//                    success: function(response) {
-//                        console.log("update user twitterApiOffset");
-//                        user.set("twitterApiOffset", twitterApiOffset);
-//                        user.save(null, {
-//                            success: function(res){successCb(res);},
-//                            error: function(error){failCb(error)}
-//                        });
-//                    },
-                    success: function(res) {successCb(null, res);},
+                    success: function(response) {
+                        console.log("update user twitterApiOffset");
+                        user.set("twitterApiOffset", twitterApiOffset);
+                        user.save(null, {
+                            success: function(res){successCb(null, res);},
+                            error: function(error){failCb(error)}
+                        });
+                    },
                     error: function(error) {
                         failCb(error);
                     }
