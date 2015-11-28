@@ -22,6 +22,8 @@ var Twitter = {
         var offsetData = user.get("twitterApiOffset");
         var sinceId = null;
         var key = "favoritesListSinceId";
+        console.log("offsetData");
+        console.log(offsetData);
         if (offsetData && key in offsetData){
             sinceId = offsetData[key];
         }
@@ -37,29 +39,49 @@ var Twitter = {
         var url = "https://api.twitter.com/1.1/statuses/user_timeline.json";
         var offsetData = user.get("twitterApiOffset");
         var sinceId = null;
-        var key = "usertimelineSinceId";
-        if (offsetData && key in offsetData){
-            sinceId = offsetData[key];
+        console.log("user");
+        console.log(user);
+        console.log("offsetData");
+        console.log(offsetData);
+        if (offsetData){
+            sinceId  = offsetData.get("userTimelineSinceId");
         }
         Twitter.httpUserOAuthedRequest(user, url, sinceId, cbSuccess, cbFail);
     },
 
     saveTwitterApiOffset : function(user, data, successCb, failCb){
+        console.log("saveTwitterApiOffset start");
         var TwitterApiOffset = Parse.Object.extend("TwitterApiOffset");
         var query = new Parse.Query(TwitterApiOffset);
-        // not introbank target records
         query.equalTo("user", user);
         query.find({
-            success: function(twitterApiOffset) {
-                console.log("twitterApiOffset:: user" + twitterApiOffset.get("user"));
-                Object.keys(data).forEach(function(key) {
-                    var value = this[key];
-                    twitterApiOffset.set(key, String(value));
-                }, twitterApiOffset);
+            success: function(results) {
+                console.log("saveTwitterApiOffset::user=" + user.id);
+                // not  target records
+                var twitterApiOffset = new TwitterApiOffset();
+                if (results.length == []){
+                    console.log("twitterApiOffset create");
+                    twitterApiOffset.set("user", user);
+                }
+                else{
+                    console.log("twitterApiOffset update");
+                    twitterApiOffset = results.pop();
+                }
+                for (var key in data) {
+                    var value = data[key];
+                    console.log("saveTwitterApiOffset::" + key + "=" + value);
+                    twitterApiOffset.set(key, value);
+                }
                 twitterApiOffset.save(null, {
-                    success: function(res) {
-                        successCb(res);
-                    },
+//                    success: function(response) {
+//                        console.log("update user twitterApiOffset");
+//                        user.set("twitterApiOffset", twitterApiOffset);
+//                        user.save(null, {
+//                            success: function(res){successCb(res);},
+//                            error: function(error){failCb(error)}
+//                        });
+//                    },
+                    success: function(res) {successCb(null, res);},
                     error: function(error) {
                         failCb(error);
                     }

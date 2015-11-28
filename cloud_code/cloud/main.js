@@ -121,19 +121,38 @@ Parse.Cloud.job('collectTwitterRetweet', function(request, status) {
     query.include("twitterApiOffset");
     query.each(function(user) {
         Twitter.getUserTimeline(user, function(error, tweets) {
+            var offsetData = user.get("twitterApiOffset");
+            var lastStatusId = 0;
+            var offsetKey = "usertimelineSinceId";
+            if (offsetData && offsetKey in offsetData){
+                lastStatusId = Number(offsetData[offsetKey]);
+            }
             for (var i = 0; i < tweets.length; i++) {
-                if(tweets[i].retweeted == true){
-                    Twitter.saveTwitterContribution(user, "retweet", 20, tweets[i].retweeted_status, 
-                    function(result) {
-                        console.log("Success saving twitter contribution");
-                    }
+                var tweet = tweets[i];
+                if(tweet.retweeted == true){
+                    var retweet = tweet.retweeted_status;
+                    Twitter.saveTwitterContribution(user, "retweet", 20, retweet, 
+                        function(result) {
+                            var statusId= Number(retweet.id_str);
+                            // update latestId
+                            if(statusId > lastStatusId){
+                                lastStatusId = statusId;
+                                console.log("lastStatusId=" + lastStatusId);
+                                Twitter.saveTwitterApiOffset(user, {userTimelineSinceId: lastStatusId}, 
+                                function(result){ 
+                                    console.log("Success saving twitter contribution");
+                                },
+                                function(error){
+                                console.log("Failed saving twitter api offset::" + error);
+                                });
+                            }
+                        }
                 , function(error) {
                     console.log("Failed saving twitter contribution::" + error);
                 });
                 }
             }
         }, function(error, result) {
-
         });
     }).then(function() {
         console.log("Query submit success");
