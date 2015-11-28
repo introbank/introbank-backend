@@ -30,6 +30,7 @@ Parse.Cloud.job('collectTwitterLike', function(request, status) {
     Parse.Cloud.useMasterKey();
 
     var query = new Parse.Query(Parse.User);
+    query.include("twitterApiOffset");
     query.each(function(user) {
         Twitter.getLike(user, function(error, likes) {
             for (var i = 0; i < likes.length; i++) {
@@ -117,6 +118,7 @@ Parse.Cloud.job('collectTwitterRetweet', function(request, status) {
     Parse.Cloud.useMasterKey();
 
     var query = new Parse.Query(Parse.User);
+    query.include("twitterApiOffset");
     query.each(function(user) {
         Twitter.getUserTimeline(user, function(error, tweets) {
             for (var i = 0; i < tweets.length; i++) {

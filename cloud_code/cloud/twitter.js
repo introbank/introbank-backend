@@ -19,26 +19,13 @@ var Twitter = {
 
     getLike : function(user, cbSuccess, cbFail) {
         var url = "https://api.twitter.com/1.1/favorites/list.json";
-        var authData = Twitter._extractAuthData(user);
-
-        Parse.Cloud.httpRequest({
-            url: url,
-            followRedirects: true,
-            headers: {
-                "Authorization": Twitter.getOAuthSignature(url, authData.screenName,
-                    authData.authToken, authData.authTokenSecret, authData.consumerKey, authData.consumerSecret)
-            },
-            params: {
-                screen_name: authData.screenName
-            }
-        }).then(function (res) {
-            // In case of request success, save his contribution
-            // into Contribution class in Parse DB.
-            cbSuccess(null, res.data);
-        }, function (res) {
-            // In case of request failed
-            cbFail(res.text, "Failed");
-        });
+        var offsetData = user.get("twitterApiOffset");
+        var sinceId = null;
+        var key = "favoritesListSinceId";
+        if (offsetData && key in offsetData){
+            sinceId = user.get("twitterApiOffset")[key];
+        }
+        Twitter.httpUserOAuthedRequest(user, url, null, cbSuccess, cbFail);
     },
     
     /**
@@ -48,24 +35,13 @@ var Twitter = {
      */
     getUserTimeline : function(user, cbSuccess, cbFail) {
         var url = "https://api.twitter.com/1.1/statuses/user_timeline.json";
-        var authData = Twitter._extractAuthData(user);
-
-        Parse.Cloud.httpRequest({
-            url: url,
-            followRedirects: true,
-            headers: {
-                "Authorization": Twitter.getOAuthSignature(url, authData.screenName,
-                    authData.authToken, authData.authTokenSecret, authData.consumerKey, authData.consumerSecret)
-            },
-            params: {
-                screen_name: authData.screenName,
-                count: 200
-            }
-        }).then(function (res) {
-            cbSuccess(null, res.data);
-        }, function (res) {
-            cbFail(res.text, "Failed");
-        });
+        var offsetData = user.get("twitterApiOffset");
+        var sinceId = null;
+        var key = "usertimelineSinceId";
+        if (offsetData && key in offsetData){
+            sinceId = user.get("twitterApiOffset")[key];
+        }
+        Twitter.httpUserOAuthedRequest(user, url, sinceId, cbSuccess, cbFail);
     },
 
     /**
@@ -78,7 +54,7 @@ var Twitter = {
      * @param consumerSecret
      * @returns {string}
      */
-    getOAuthSignature : function(url, screenName, authToken, authTokenSecret,
+    getOAuthSignature : function(url, screenName, count, authToken, authTokenSecret,
                                      consumerKey, consumerSecret) {
         var nonce = OAuth.nonce(32);
         var ts = Math.floor(new Date().getTime() / 1000);
@@ -96,7 +72,8 @@ var Twitter = {
             "oauth_timestamp": timestamp,
             "oauth_nonce": nonce,
             "oauth_signature_method": "HMAC-SHA1",
-            "screen_name": screenName
+            "screen_name": screenName,
+            "count" : count
         };
 
         var message = {
@@ -184,6 +161,7 @@ var Twitter = {
         query.find({
             success: function(twitterContrib) {
                 // delete
+                console.log("delete recodes for user::" + user.get("username"));
                 Parse.Object.destroyAll(twitterContrib, {
                     success:function(tiwtterContrib) {
                         successCb(tiwtterContrib);
@@ -199,6 +177,35 @@ var Twitter = {
             }
         });
     },
+
+    httpUserOAuthedRequest : function(user, url, sinceId, cbSuccess, cbFail) {
+        console.log("********************");
+        console.log("url=" + url);
+        console.log("sinceId=" + sinceId);
+        var authData = Twitter._extractAuthData(user);
+        var params = {screen_name: authData.screenName, count:200};
+        if(sinceId != null){
+            params["since_id"] = sinceId;
+        }
+        Parse.Cloud.httpRequest({
+            url: url,
+            followRedirects: true,
+            headers: {
+                "Authorization": Twitter.getOAuthSignature(url, authData.screenName, 200,
+                    authData.authToken, authData.authTokenSecret, authData.consumerKey, authData.consumerSecret)
+            },
+            params: params
+        }).then(function (res) {
+            // In case of request success, save his contribution
+            // into Contribution class in Parse DB.
+            cbSuccess(null, res.data);
+        }, function (res) {
+            // In case of request failed
+            cbFail(res.text, "Failed");
+        });
+    },
+
+
 };
 
 
