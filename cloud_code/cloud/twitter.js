@@ -27,7 +27,7 @@ var Twitter = {
         var offsetData = user.get("twitterApiOffset");
         var sinceId = null;
         if (offsetData){
-            sinceId = offsetData.get("favoritesListSinceId");
+            sinceId = Number(offsetData.get("favoritesListSinceId")) + 1;
         }
         Twitter.httpUserOAuthedRequest(user, url, sinceId, cbSuccess, cbFail);
     },
@@ -42,7 +42,7 @@ var Twitter = {
         var offsetData = user.get("twitterApiOffset");
         var sinceId = null;
         if (offsetData){
-            sinceId  = offsetData.get("userTimelineSinceId");
+            sinceId  = Number(offsetData.get("userTimelineSinceId")) + 1;
         }
         Twitter.httpUserOAuthedRequest(user, url, sinceId, cbSuccess, cbFail);
     },
