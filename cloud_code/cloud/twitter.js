@@ -17,21 +17,23 @@ var Twitter = {
         }
     },
 
+    /**
+     * @param user 
+     * @param cbSuccess
+     * @param cbFail
+     */
     getLike : function(user, cbSuccess, cbFail) {
         var url = "https://api.twitter.com/1.1/favorites/list.json";
         var offsetData = user.get("twitterApiOffset");
         var sinceId = null;
-        var key = "favoritesListSinceId";
-        console.log("offsetData");
-        console.log(offsetData);
-        if (offsetData && key in offsetData){
-            sinceId = offsetData[key];
+        if (offsetData){
+            sinceId = offsetData.get("favoritesListSinceId");
         }
         Twitter.httpUserOAuthedRequest(user, url, sinceId, cbSuccess, cbFail);
     },
     
     /**
-     * @param statusId 
+     * @param user 
      * @param cbSuccess
      * @param cbFail
      */
@@ -39,10 +41,6 @@ var Twitter = {
         var url = "https://api.twitter.com/1.1/statuses/user_timeline.json";
         var offsetData = user.get("twitterApiOffset");
         var sinceId = null;
-        console.log("user");
-        console.log(user);
-        console.log("offsetData");
-        console.log(offsetData);
         if (offsetData){
             sinceId  = offsetData.get("userTimelineSinceId");
         }
