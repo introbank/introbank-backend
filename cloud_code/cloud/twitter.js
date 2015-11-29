@@ -212,12 +212,11 @@ var Twitter = {
                 var targetTimestamp = Date.now() - 3600000;
                 for(var i = 0; i < twitterContrib.length; i++){
                     var update = Date.parse(twitterContrib[i].get("updatedAt"));
-                    console.log("update=" + update + ",targetTimestamp=" + targetTimestamp);
-                    if(update  < targetTimestamp){
-                        deletes.push(twitterContrib);
+                    if(update < targetTimestamp){
+                        deletes.push(twitterContrib[i]);
                     }
                 }
-
+                console.log("delete recodes::" + deletes.length);
                 Parse.Object.destroyAll(deletes, {
                     success:function(res) {
                         successCb(null, res);
