@@ -207,9 +207,20 @@ var Twitter = {
             success: function(twitterContrib) {
                 // delete
                 console.log("delete recodes for user::" + user.get("username"));
-                Parse.Object.destroyAll(twitterContrib, {
-                    success:function(tiwtterContrib) {
-                        successCb(tiwtterContrib);
+                deletes = [];
+                // 1 hour
+                var targetTimestamp = Date.now() - 3600000;
+                for(var i = 0; i < twitterContrib.length; i++){
+                    var update = Date.parse(twitterContrib[i].get("updatedAt"));
+                    console.log("update=" + update + ",targetTimestamp=" + targetTimestamp);
+                    if(update  < targetTimestamp){
+                        deletes.push(twitterContrib);
+                    }
+                }
+
+                Parse.Object.destroyAll(deletes, {
+                    success:function(res) {
+                        successCb(null, res);
                     },
                     error:function(error) {
                         console.log(error.message)
@@ -224,7 +235,6 @@ var Twitter = {
     },
 
     httpUserOAuthedRequest : function(user, url, sinceId, cbSuccess, cbFail) {
-        console.log("********************");
         console.log("url=" + url);
         console.log("sinceId=" + sinceId);
         var authData = Twitter._extractAuthData(user);
