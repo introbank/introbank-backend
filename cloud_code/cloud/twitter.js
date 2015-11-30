@@ -164,13 +164,13 @@ var Twitter = {
     updateTwitterContribution : function(target, successCb, failCb) {
         var TwitterContribution = Parse.Object.extend("TwitterContribution");
         var query = new Parse.Query(TwitterContribution);
-        query.equalTo("targetTwitterId", target.get("twitterId"));
+        var col = target.className.toLowerCase();
+        query.equalTo("targetTwitterId", target.get("twitterId")).notEqualTo(col, null);
         query.find({
             success: function(twitterContrib) {
                 if (twitterContrib.length == 0){
                     console.log("twitterContrib has no recode.");
                 }
-                var col = target.className.toLowerCase();
                 var data = {};
                 data[col] = {"__type": "Pointer", "className":target.className, "objectId":target.id};
                 for (var i = 0; i < twitterContrib.length; i++) {
