@@ -165,7 +165,7 @@ var Twitter = {
         var TwitterContribution = Parse.Object.extend("TwitterContribution");
         var query = new Parse.Query(TwitterContribution);
         var col = target.className.toLowerCase();
-        query.equalTo("targetTwitterId", target.get("twitterId")).notEqualTo(col, null);
+        query.equalTo("targetTwitterId", target.get("twitterId")).equalTo(col, null);
         query.find({
             success: function(twitterContrib) {
                 if (twitterContrib.length == 0){
