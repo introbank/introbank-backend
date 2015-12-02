@@ -111,8 +111,9 @@ class TwitterDataStreaming(object):
                 for media in mediaList:
                     mediaDataModel = MediaDataModel(self.connection)
                     
-                    for album in self.getAlbumIdList(twitterId, hashtags):
-                        res = mediaDataModel.insertNewMedia(album, twitterId, twitterStatusId, media['media_url_https'], tweetObjectId)
+                    albumIds = self.getAlbumIdList(twitterId, hashtags)
+                    if len(albumIds) > 0:
+                        mediaDataModel.insertNewMedia(albumIds, twitterId, twitterStatusId, media['media_url_https'], tweetObjectId)
             except (KeyError, BrankMediaData):
                 pass
         

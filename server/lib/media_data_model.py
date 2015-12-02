@@ -5,7 +5,7 @@ from album_media_map_data_object import AlbumMediaMapDataObject
 
 class MediaDataModel(BaseDataModel):
 
-    def insertNewMedia(self, albumId, twitterId, twitterStatusId, mediaUri, tweetObjectId):
+    def insertNewMedia(self, albumIds, twitterId, twitterStatusId, mediaUri, tweetObjectId):
         try:
 
             ## connect
@@ -14,14 +14,15 @@ class MediaDataModel(BaseDataModel):
             ## insert media
             mediaDataObject = MediaDataObject(self.connection)
             res = mediaDataObject.insert(twitterId, twitterStatusId, mediaUri, tweetObjectId)
-            print "== insert media =="
             print res
+            print "== insert media =="
             mediaId = res["objectId"]
 
             ## insert AlbumMediaMap
             albumMediaMapDataObject = AlbumMediaMapDataObject(self.connection)
-            albumMediaMapDataObject.insert(albumId, mediaId)
-            print "== insert done =="
+            for albumId in albumIds:
+                albumMediaMapDataObject.insert(albumId, mediaId)
+                print "== insert mediamap done =="
 
             ## close
             self._close()
