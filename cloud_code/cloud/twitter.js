@@ -99,7 +99,7 @@ var Twitter = {
      * @param consumerSecret
      * @returns {string}
      */
-    getOAuthSignature : function(url, screenName, count, authToken, authTokenSecret,
+    getOAuthSignature : function(url, screenName, count, sinceId, authToken, authTokenSecret,
                                      consumerKey, consumerSecret) {
         var nonce = OAuth.nonce(32);
         var ts = Math.floor(new Date().getTime() / 1000);
@@ -118,7 +118,8 @@ var Twitter = {
             "oauth_nonce": nonce,
             "oauth_signature_method": "HMAC-SHA1",
             "screen_name": screenName,
-            "count" : count
+            "count" : count,
+            "since_id" : sinceId
         };
 
         var message = {
@@ -246,7 +247,7 @@ var Twitter = {
             url: url,
             followRedirects: true,
             headers: {
-                "Authorization": Twitter.getOAuthSignature(url, authData.screenName, 200,
+                "Authorization": Twitter.getOAuthSignature(url, authData.screenName, 200, sinceId,
                     authData.authToken, authData.authTokenSecret, authData.consumerKey, authData.consumerSecret)
             },
             params: params
