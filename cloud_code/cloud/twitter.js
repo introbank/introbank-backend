@@ -25,16 +25,14 @@ var Twitter = {
     getLike : function(user, cbSuccess, cbFail) {
         var url = "https://api.twitter.com/1.1/favorites/list.json";
         var offsetData = user.get("twitterApiOffset");
-        var sinceId = null;
-        if (offsetData && offsetData.get("favoritesListSinceId")){
-            sinceId = Number(offsetData.get("favoritesListSinceId")) + 1;
-        }
-
         var authData = Twitter._extractAuthData(user);
         var params = {"screen_name": authData.screenName, "count":200};
-        if(sinceId != null){
-            params["since_id"] = sinceId;
+
+        if (offsetData && offsetData.get("favoritesListSinceId")){
+            var sinceId = offsetData.get("favoritesListSinceId");
+            console.log("set sence_id=" + params["since_id"]);
         }
+
 
         Twitter.httpUserOAuthedRequest(url, authData, params, cbSuccess, cbFail);
     },
@@ -47,15 +45,12 @@ var Twitter = {
     getUserTimeline : function(user, cbSuccess, cbFail) {
         var url = "https://api.twitter.com/1.1/statuses/user_timeline.json";
         var offsetData = user.get("twitterApiOffset");
-        var sinceId = null;
-        if (offsetData && offsetData.get("userTimelineSinceId")){
-            sinceId  = Number(offsetData.get("userTimelineSinceId")) + 1;
-        }
-
         var authData = Twitter._extractAuthData(user);
         var params = {"screen_name": authData.screenName, "count":200};
-        if(sinceId != null){
-            params["since_id"] = sinceId;
+
+        if (offsetData && offsetData.get("userTimelineSinceId")){
+            var sinceId  = offsetData.get("userTimelineSinceId");
+            console.log("set sence_id=" + params["since_id"]);
         }
 
         Twitter.httpUserOAuthedRequest(url, authData, params, cbSuccess, cbFail);
