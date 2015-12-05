@@ -121,7 +121,7 @@ var Twitter = {
             "count" : count,
         };
 
-        if (sinceId == null){
+        if (sinceId != null){
             params["since_id"] = sinceId
         }
 
