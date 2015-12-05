@@ -46,7 +46,7 @@ var Twitter = {
         var url = "https://api.twitter.com/1.1/statuses/user_timeline.json";
         var offsetData = user.get("twitterApiOffset");
         var authData = Twitter._extractAuthData(user);
-        var params = {"screen_name": authData.screenName, "count":200};
+        var params = {"screen_name": authData.screenName, "count":50};
 
         if (offsetData && offsetData.get("userTimelineSinceId")){
             params["since_id"] = offsetData.get("userTimelineSinceId");
