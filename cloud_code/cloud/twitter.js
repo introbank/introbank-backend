@@ -99,7 +99,7 @@ var Twitter = {
      * @param consumerSecret
      * @returns {string}
      */
-    getOAuthSignature : function(url, screenName, count, sinceId, authToken, authTokenSecret,
+    getOAuthSignature : function(url, _params, authToken, authTokenSecret,
                                      consumerKey, consumerSecret) {
         var nonce = OAuth.nonce(32);
         var ts = Math.floor(new Date().getTime() / 1000);
@@ -117,12 +117,12 @@ var Twitter = {
             "oauth_timestamp": timestamp,
             "oauth_nonce": nonce,
             "oauth_signature_method": "HMAC-SHA1",
-            "screen_name": screenName,
-            "count" : count,
+            "screen_name": _params["screen_name"],
+            "count" : _params["count"]
         };
 
-        if (sinceId != null){
-            params["since_id"] = sinceId
+        if (_params["since_id"]){
+            params["since_id"] = _params["since_id"];
         }
 
         var message = {
@@ -241,7 +241,7 @@ var Twitter = {
         console.log("url=" + url);
         console.log("sinceId=" + sinceId);
         var authData = Twitter._extractAuthData(user);
-        var params = {screen_name: authData.screenName, count:200};
+        var params = {"screen_name": authData.screenName, "count":200};
         console.log("user=" + authData.screenName);
         if(sinceId != null){
             params["since_id"] = sinceId;
@@ -250,7 +250,7 @@ var Twitter = {
             url: url,
             followRedirects: true,
             headers: {
-                "Authorization": Twitter.getOAuthSignature(url, authData.screenName, 200, sinceId,
+                "Authorization": Twitter.getOAuthSignature(url, params,
                     authData.authToken, authData.authTokenSecret, authData.consumerKey, authData.consumerSecret)
             },
             params: params
