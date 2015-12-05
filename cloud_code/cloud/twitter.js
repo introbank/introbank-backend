@@ -119,8 +119,11 @@ var Twitter = {
             "oauth_signature_method": "HMAC-SHA1",
             "screen_name": screenName,
             "count" : count,
-            "since_id" : sinceId
         };
+
+        if (sinceId == null){
+            params["since_id"] = sinceId
+        }
 
         var message = {
             "method": "GET",
