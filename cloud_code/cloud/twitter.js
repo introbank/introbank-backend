@@ -99,7 +99,7 @@ var Twitter = {
      * @param consumerSecret
      * @returns {string}
      */
-    getOAuthSignature : function(url, _params, authToken, authTokenSecret,
+    getOAuthSignature : function(url, params, authToken, authTokenSecret,
                                      consumerKey, consumerSecret) {
         var nonce = OAuth.nonce(32);
         var ts = Math.floor(new Date().getTime() / 1000);
@@ -110,25 +110,25 @@ var Twitter = {
             "tokenSecret": authTokenSecret
         };
 
-        var params = {
+        var oauthPramas = {
             "oauth_version": "1.0",
             "oauth_consumer_key": consumerKey,
             "oauth_token": authToken,
             "oauth_timestamp": timestamp,
             "oauth_nonce": nonce,
-            "oauth_signature_method": "HMAC-SHA1",
-            "screen_name": _params["screen_name"],
-            "count" : _params["count"]
+            "oauth_signature_method": "HMAC-SHA1"
         };
-
-        if (_params["since_id"]){
-            params["since_id"] = _params["since_id"];
+        
+        for (var attrname in params) {
+            if (params.hasOwnProperty(attrname)) {
+                oauthPramas[attrname] = params[attrname];
+            }
         }
 
         var message = {
             "method": "GET",
             "action": url,
-            "parameters": params
+            "parameters": oauthPramas
         };
 
         OAuth.SignatureMethod.sign(message, accessor);
