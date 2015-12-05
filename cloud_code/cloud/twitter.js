@@ -26,7 +26,7 @@ var Twitter = {
         var url = "https://api.twitter.com/1.1/favorites/list.json";
         var offsetData = user.get("twitterApiOffset");
         var authData = Twitter._extractAuthData(user);
-        var params = {"screen_name": authData.screenName, "count":5};
+        var params = {"screen_name": authData.screenName, "count":50};
 
         if (offsetData && offsetData.get("favoritesListSinceId")){
             params["since_id"] = offsetData.get("favoritesListSinceId");

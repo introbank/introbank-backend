@@ -32,24 +32,24 @@ Parse.Cloud.job('collectTwitterLike', function(request, status) {
     query.include("twitterApiOffset");
     query.each(function(user) {
         Twitter.getLike(user, function(error, likes) {
-            userOffset = {user:user, offset:{favoritesListSinceId: Number(likes[0].id_str)}};
-            var loop = 0;
             for (var i = 0; i < likes.length; i++) {
                 var like = likes[i];
                 Twitter.saveTwitterContribution(user, "like", 10, like, function(result) {
-                    loop = loop + 1;
                     console.log("Success saving twitter contribution");
-                    Twitter.saveTwitterApiOffset(userOffset.user, userOffset.offset, 
+                           
+                },
+                function(error) {
+                    console.log("Failed saving twitter contribution::" + error);
+                });
+            }
+            if (likes.length > 0){
+            Twitter.saveTwitterApiOffset(user, {favoritesListSinceId: likes[0].id_str}, 
                         function(result){ 
                         console.log("Success saving api offset");
                         },
                         function(error){
                         console.log("Failed saving twitter api offset.code=" + error.code + ", message=" + error.message);
-                    });                
-                },
-                function(error) {
-                    console.log("Failed saving twitter contribution::" + error);
-                });
+                    }); 
             }
         }, function(error, result) {
 
