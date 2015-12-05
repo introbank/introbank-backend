@@ -26,10 +26,10 @@ var Twitter = {
         var url = "https://api.twitter.com/1.1/favorites/list.json";
         var offsetData = user.get("twitterApiOffset");
         var authData = Twitter._extractAuthData(user);
-        var params = {"screen_name": authData.screenName, "count":200};
+        var params = {"screen_name": authData.screenName, "count":5};
 
         if (offsetData && offsetData.get("favoritesListSinceId")){
-            var sinceId = offsetData.get("favoritesListSinceId");
+            params["since_id"] = offsetData.get("favoritesListSinceId");
             console.log("set sence_id=" + params["since_id"]);
         }
 
@@ -49,7 +49,7 @@ var Twitter = {
         var params = {"screen_name": authData.screenName, "count":200};
 
         if (offsetData && offsetData.get("userTimelineSinceId")){
-            var sinceId  = offsetData.get("userTimelineSinceId");
+            params["since_id"] = offsetData.get("userTimelineSinceId");
             console.log("set sence_id=" + params["since_id"]);
         }
 
@@ -88,7 +88,7 @@ var Twitter = {
                             error: function(error){failCb(error)}
                         });
                     },
-                    error: function(error) {
+                    error: function(res, error) {
                         failCb(error);
                     }
                 });

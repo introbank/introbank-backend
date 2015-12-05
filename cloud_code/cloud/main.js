@@ -28,33 +28,24 @@ Parse.Cloud.job('collectTwitterLike', function(request, status) {
     console.log("Started collecting twitter likes");
 
     Parse.Cloud.useMasterKey();
-
     var query = new Parse.Query(Parse.User);
     query.include("twitterApiOffset");
     query.each(function(user) {
         Twitter.getLike(user, function(error, likes) {
-            var offsetData = user.get("twitterApiOffset");
-            var lastStatusId = 0;
-            var offsetKey = "favoritesListSinceId";
-            if (offsetData && offsetKey in offsetData){
-                lastStatusId = Number(offsetData[offsetKey]);
-            }
+            userOffset = {user:user, offset:{favoritesListSinceId: Number(likes[0].id_str)}};
+            var loop = 0;
             for (var i = 0; i < likes.length; i++) {
                 var like = likes[i];
                 Twitter.saveTwitterContribution(user, "like", 10, like, function(result) {
-                    var statusId= Number(like.id_str);
-                    // update latestId
-                    if(statusId > lastStatusId){
-                        lastStatusId = statusId;
-                        console.log("update lastStatusId=" + lastStatusId);
-                        Twitter.saveTwitterApiOffset(user, {favoritesListSinceId: lastStatusId}, 
+                    loop = loop + 1;
+                    console.log("Success saving twitter contribution");
+                    Twitter.saveTwitterApiOffset(userOffset.user, userOffset.offset, 
                         function(result){ 
-                            console.log("Success saving twitter contribution");
+                        console.log("Success saving api offset");
                         },
                         function(error){
-                        console.log("Failed saving twitter api offset::" + error);
-                        });
-                    }
+                        console.log("Failed saving twitter api offset.code=" + error.code + ", message=" + error.message);
+                    });                
                 },
                 function(error) {
                     console.log("Failed saving twitter contribution::" + error);
@@ -64,7 +55,7 @@ Parse.Cloud.job('collectTwitterLike', function(request, status) {
 
         });
     }).then(function() {
-        console.log("Query submit success");
+
     }, function(error) {
         console.log("Query submission failed");
         status.error("Query failed");
