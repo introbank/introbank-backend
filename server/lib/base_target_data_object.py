@@ -8,7 +8,7 @@ class BaseTargetDataObject(BaseDataObject):
         objectIdList = []
         twitterIdList = []
 
-        response = self._select(queryDict={"keys":"twitterId"})
+        response = self._find(queryDict={"keys":"twitterId"})
         try:
             for data in response["results"]:
                 objectIdList.append(data["objectId"])

@@ -26,11 +26,11 @@ class ParseConnection(object):
         res =  self.connection.getresponse().read()
         return json.loads(res)
 
-    def insert(self, table, dataDict):
+    def save(self, table, dataDict):
         self.connection.request('POST', '/1/classes/{0}'.format(table), json.dumps(dataDict), self.META_DATA)
         return self.getResponceDict()
 
-    def select(self, table, objectId = None, queryDict = []):
+    def find(self, table, objectId = None, queryDict = []):
         path =  "" if objectId == None else "/{0}".format(objectId)
         query = "" if queryDict == [] else "?{0}".format(urllib.urlencode(queryDict))
         url = '/1/classes/{0}{1}{2}'.format(table, path, query)

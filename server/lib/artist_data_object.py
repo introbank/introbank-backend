@@ -6,7 +6,7 @@ class ArtistDataObject(BaseTargetDataObject):
 
     def getInfoToTwitterStream(self):
         infoList = []
-        response = self._select(queryDict={"keys":"twitterId,album"})
+        response = self._find(queryDict={"keys":"twitterId,album"})
         try:
             for data in response["results"]:
                 infoList.append({"objectId": data["objectId"], "twitterId":data["twitterId"],  "album":data["album"]["objectId"]})

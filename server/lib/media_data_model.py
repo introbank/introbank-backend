@@ -5,24 +5,24 @@ from album_media_map_data_object import AlbumMediaMapDataObject
 
 class MediaDataModel(BaseDataModel):
 
-    def insertNewMedia(self, albumIds, twitterId, twitterStatusId, mediaUri, tweetObjectId):
+    def saveNewMedia(self, albumIds, twitterId, twitterStatusId, mediaUri, tweetObjectId):
         try:
 
             ## connect
             self._connect()
 
-            ## insert media
+            ## save media
             mediaDataObject = MediaDataObject(self.connection)
-            res = mediaDataObject.insert(twitterId, twitterStatusId, mediaUri, tweetObjectId)
+            res = mediaDataObject.save(twitterId, twitterStatusId, mediaUri, tweetObjectId)
             print res
-            print "== insert media =="
+            print "== save media =="
             mediaId = res["objectId"]
 
-            ## insert AlbumMediaMap
+            ## save AlbumMediaMap
             albumMediaMapDataObject = AlbumMediaMapDataObject(self.connection)
             for albumId in albumIds:
-                albumMediaMapDataObject.insert(albumId, mediaId)
-                print "== insert mediamap done =="
+                albumMediaMapDataObject.save(albumId, mediaId)
+                print "== save mediamap done =="
 
             ## close
             self._close()

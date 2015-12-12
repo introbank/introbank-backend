@@ -4,15 +4,15 @@ from tweet_data_object import TweetDataObject
 
 class TweetDataModel(BaseDataModel):
 
-    def insertTweetData(self, twitterId, twitterStatusId, text, className, objectId):
+    def saveTweetData(self, twitterId, twitterStatusId, text, className, objectId):
         try:
             ## connect
             self._connect()
 
-            ## insert media
+            ## save media
             tweetDataObject = TweetDataObject(self.connection)
-            res = tweetDataObject.insert(twitterId, twitterStatusId, text, className, objectId)
-            print "== insert tweetData =="
+            res = tweetDataObject.save(twitterId, twitterStatusId, text, className, objectId)
+            print "== save tweetData =="
 
             ## close
             self._close()

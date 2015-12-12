@@ -80,6 +80,11 @@ class TwitterDataStreaming(object):
             self.track.append(group["hashtag"])
             self.twitterIdInfo[group["twitterId"]] = {"albumId":group["album"], "classInfo":ParseClassInfo("Group", group["objectId"])}
             self.hashtagAlbumIdMap[group["hashtag"]] = group["album"]
+            
+            # add subTwitterIds
+            for subTwitterId in group["subTwitterIds"]:
+                self.follow.append(subTwitterId)
+                self.twitterIdInfo[subTwitterId] = {"albumId":group["album"], "classInfo":ParseClassInfo("Group", group["objectId"])}
 
 
         print "follow::" + ",".join(self.follow)
@@ -90,7 +95,7 @@ class TwitterDataStreaming(object):
     def main(self):
         print "main start"
         for item in TwitterStream.get(follow=self.follow, track=self.track):
-            ## insert TweetId
+            ## save TweetId
             try:
                 twitterId = item["user"]["id_str"] 
                 twitterStatusId = item["id_str"]
@@ -101,10 +106,10 @@ class TwitterDataStreaming(object):
                 if classInfo is not None:
                     print "::" + twitterId + "::" + twitterStatusId + "::" + text
                     tweetDataModel = TweetDataModel(self.connection)
-                    tweetObjectId = tweetDataModel.insertTweetData(twitterId, twitterStatusId, text, classInfo.name, classInfo.objectId)
+                    tweetObjectId = tweetDataModel.saveTweetData(twitterId, twitterStatusId, text, classInfo.name, classInfo.objectId)
             except Exception as e:
-                continue
-            ## insert Album
+                print e.message
+            ## save Album
             try:
                 mediaList = item["extended_entities"]["media"]
                 hashtags = item["entities"]["hashtags"]
@@ -113,7 +118,7 @@ class TwitterDataStreaming(object):
                     
                     albumIds = self.getAlbumIdList(twitterId, hashtags)
                     if len(albumIds) > 0:
-                        mediaDataModel.insertNewMedia(albumIds, twitterId, twitterStatusId, media['media_url_https'], tweetObjectId)
+                        mediaDataModel.saveNewMedia(albumIds, twitterId, twitterStatusId, media['media_url_https'], tweetObjectId)
             except (KeyError, BrankMediaData):
                 pass
         
@@ -159,4 +164,4 @@ class BrankMediaData(BaseException):
 if __name__ == '__main__':
     streaming = TwitterDataStreaming()
     streaming.setup()    
-    streaming.start()
+    #streaming.start()

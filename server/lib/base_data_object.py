@@ -4,11 +4,11 @@ class BaseDataObject(object):
     def __init__(self, connection):
         self.connection = connection
 
-    def _select(self, objectId = None, queryDict = []):
-        return self.connection.select(self.tableName, objectId, queryDict)
+    def _find(self, objectId = None, queryDict = []):
+        return self.connection.find(self.tableName, objectId, queryDict)
 
-    def _insert(self, dataDict):
-        return self.connection.insert(self.tableName, dataDict)
+    def _save(self, dataDict):
+        return self.connection.save(self.tableName, dataDict)
 
 class DataObjectException(BaseException):
     pass
