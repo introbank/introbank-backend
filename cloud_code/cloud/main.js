@@ -1,6 +1,7 @@
 var OAuth = require('cloud/oauth.js');
 var sha   = require('cloud/sha1.js');
 var Twitter = require('cloud/twitter.js');
+var StringHash = require('cloud/string-hash.js');
 
 // Use Parse.Cloud.define to define as many cloud functions as you want.
 // For example:
@@ -205,13 +206,19 @@ Parse.Cloud.job('syncGroupTwitterUserData', function(request, status) {
 Parse.Cloud.job('syncArtistTwitterUserData', function(request, status) {
     console.log("Started sync artist's twitter user data");
     Parse.Cloud.useMasterKey();
+    var now = new Date();
+    var hh = now.getHours();
     var Artist = Parse.Object.extend("Artist");
 
     var query = new Parse.Query(Artist);
     query.find(function(artists) {
         var twitterIds= []
         for(var i = 0; i < artists.length; i++){
-            twitterIds.push(artists[i].get("twitterId"));
+            var objectId = artists[i].id;
+            var hash = StringHash.calc(objectId)  % 24;
+            if (hash == hh){
+                twitterIds.push(artists[i].get("twitterId"));
+            }
         }
         Twitter.getTwitterUsersLookup(twitterIds, function(error, userslookup) {
             for (var i = 0; i < userslookup.length; i++) {
