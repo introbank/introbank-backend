@@ -228,7 +228,8 @@ var Twitter = {
         }
         target.set("name", twitterUserInfo.name);
         target.set("info", twitterUserInfo.description);
-        target.set("imageUrl", twitterUserInfo.profile_image_url_https);
+        var imageUrl = twitterUserInfo.profile_image_url_https.replace("_normal","");
+        target.set("imageUrl", imageUrl);
         target.set("twitterUsername", twitterUserInfo.screen_name);
         target.save(null, {
                     success:function(result) {
