@@ -85,7 +85,6 @@ Parse.Cloud.job('updateTwitterContribution', function(request, status) {
         }
 
         query.each(function(target) {
-            console.log("Update twitter contribution. target.id=" + target.id);
             console.log("Update twitter contribution. target.twitterId=" + target.get("twitterId"));
 
             Twitter.updateTwitterContribution(target,
@@ -161,6 +160,70 @@ Parse.Cloud.job('collectTwitterRetweet', function(request, status) {
                 console.log("no new tweet data and offset is not changed");
             }
  
+        }, function(error, result) {
+        });
+    }).then(function() {
+        console.log("Query submit success");
+    }, function(error) {
+        console.log("Query submission failed");
+        status.error("Query failed");
+    });
+});
+
+Parse.Cloud.job('syncGroupTwitterUserData', function(request, status) {
+    console.log("Started sync group's twitter user data");
+    Parse.Cloud.useMasterKey();
+    var Group = Parse.Object.extend("Group");
+
+    var query = new Parse.Query(Group);
+    query.find(function(groups) {
+        var twitterIds= []
+        for(var i = 0; i < groups.length; i++){
+            twitterIds.push(groups[i].get("twitterId"));
+        }
+        Twitter.getTwitterUsersLookup(twitterIds, function(error, userslookup) {
+            for (var i = 0; i < userslookup.length; i++) {
+                Twitter.updateTargetAccountInfo(groups[i], userslookup[i], 
+                function(){
+                    console.log("update group data success");
+                },
+                function(){
+                    console.log("update group data failed");
+                }
+                );
+            }
+        }, function(error, result) {
+        });
+    }).then(function() {
+        console.log("Query submit success");
+    }, function(error) {
+        console.log("Query submission failed");
+        status.error("Query failed");
+    });
+});
+
+Parse.Cloud.job('syncArtistTwitterUserData', function(request, status) {
+    console.log("Started sync artist's twitter user data");
+    Parse.Cloud.useMasterKey();
+    var Artist = Parse.Object.extend("Artist");
+
+    var query = new Parse.Query(Artist);
+    query.find(function(artists) {
+        var twitterIds= []
+        for(var i = 0; i < artists.length; i++){
+            twitterIds.push(artists[i].get("twitterId"));
+        }
+        Twitter.getTwitterUsersLookup(twitterIds, function(error, userslookup) {
+            for (var i = 0; i < userslookup.length; i++) {
+                Twitter.updateTargetAccountInfo(artists[i], userslookup[i], 
+                function(){
+                    console.log("update artist data success");
+                },
+                function(){
+                    console.log("update artist data failed");
+                }
+                );
+            }
         }, function(error, result) {
         });
     }).then(function() {
