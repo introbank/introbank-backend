@@ -77,9 +77,12 @@ class TwitterDataStreaming(object):
 
         for group in groupData:
             self.follow.append(group["twitterId"])
-            self.track.append(group["hashtag"])
             self.twitterIdInfo[group["twitterId"]] = {"albumId":group["album"], "classInfo":ParseClassInfo("Group", group["objectId"])}
-            self.hashtagAlbumIdMap[group["hashtag"]] = group["album"]
+
+            if (group["hashtag"] is not None):
+                self.track.append(group["hashtag"])
+                self.hashtagAlbumIdMap[group["hashtag"]] = group["album"]
+
             
             # add subTwitterIds
             for subTwitterId in group["subTwitterIds"]:
