@@ -9,9 +9,11 @@ class ArtistDataObject(BaseTargetDataObject):
         response = self._find(queryDict={"keys":"twitterId,album"})
         try:
             for data in response["results"]:
-                infoList.append({"objectId": data["objectId"], "twitterId":data["twitterId"],  "album":data["album"]["objectId"]})
-        except KeyError:
-            raise Exception(response)
+                objectId = data["objectId"]
+                infoList.append({"objectId": objectId, "twitterId":data["twitterId"],  "album":data["album"]["objectId"]})
+        except KeyError as e:
+            print "error::" + objectId
+            raise Exception(e)
 
         return infoList
 

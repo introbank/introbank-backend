@@ -56,6 +56,20 @@ var Twitter = {
         Twitter.httpUserOAuthedRequest(url, authData, params, cbSuccess, cbFail);
     },
 
+    /**
+     * @param twitterIds 
+     * @param cbSuccess
+     * @param cbFail
+     */
+    getTwitterUsersLookup : function(twitterIds, cbSuccess, cbFail) {
+        var url = "https://api.twitter.com/1.1/users/lookup.json";
+        var user_id = twitterIds.join(",");
+        console.log("user_id=" + user_id);
+        var params = {"user_id": user_id};
+
+        Twitter.httpAppOAuthedRequest(url, params, cbSuccess, cbFail);
+    },
+
     saveTwitterApiOffset : function(user, data, successCb, failCb){
         console.log("saveTwitterApiOffset start");
         var TwitterApiOffset = Parse.Object.extend("TwitterApiOffset");
@@ -205,6 +219,30 @@ var Twitter = {
     },
 
     /**
+     *
+     */
+    updateTargetAccountInfo : function(target, twitterUserInfo, successCb, failCb) {
+        console.log("updateTargetAccountInfo start");
+        if (target.get("twitterId") != twitterUserInfo.id_str){
+            console.log("error. target=" + target.get("twitterId") + ", twitterId=" + twitterUserInfo.id_str);
+        }
+        target.set("name", twitterUserInfo.name);
+        target.set("info", twitterUserInfo.description);
+        var imageUrl = twitterUserInfo.profile_image_url_https.replace("_normal","");
+        target.set("imageUrl", imageUrl);
+        target.set("twitterUsername", twitterUserInfo.screen_name);
+        target.save(null, {
+                    success:function(result) {
+                        successCb(result);
+                    },
+                    error:function(error) {
+                        console.log(error.message)
+                        failCb(error);
+                    }
+                });
+    },
+
+    /**
      * Delete TwitterContribution UseLess Recodes 
      * @param type
      * @param target
@@ -265,6 +303,27 @@ var Twitter = {
             cbFail(res.text, "Failed");
         });
     },
+
+    httpAppOAuthedRequest : function(url, params, cbSuccess, cbFail) {
+        console.log("url=" + url);
+        Parse.Cloud.httpRequest({
+            url: url,
+            followRedirects: true,
+            headers: {
+                "Authorization": Twitter.getOAuthSignature(url, params,
+                    IntroApp.ACCESS_TOKEN_KEY, IntroApp.ACCESS_TOKEN_SECRET, IntroApp.CONSUMER_KEY, IntroApp.CONSUMER_SECRET)
+            },
+            params: params
+        }).then(function (res) {
+            // In case of request success, save his contribution
+            // into Contribution class in Parse DB.
+            cbSuccess(null, res.data);
+        }, function (res) {
+            // In case of request failed
+            cbFail(res.text, "Failed");
+        });
+    },
+
 };
 
 
