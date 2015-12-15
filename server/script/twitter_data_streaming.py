@@ -105,22 +105,21 @@ class TwitterDataStreaming(object):
 
                 if classInfo is not None:
                     print "::" + twitterId + "::" + twitterStatusId + "::" + text
+                    ## save tweet
                     tweetDataModel = TweetDataModel(self.connection)
                     tweetObjectId = tweetDataModel.saveTweetData(twitterId, twitterStatusId, text, classInfo.name, classInfo.objectId)
-            except Exception as e:
-                print e.message
-            ## save Album
-            try:
-                mediaList = item["extended_entities"]["media"]
-                hashtags = item["entities"]["hashtags"]
-                for media in mediaList:
-                    mediaDataModel = MediaDataModel(self.connection)
-                    
-                    albumIds = self.getAlbumIdList(twitterId, hashtags)
-                    if len(albumIds) > 0:
-                        mediaDataModel.saveNewMedia(albumIds, twitterId, twitterStatusId, media['media_url_https'], tweetObjectId)
-            except (KeyError, BrankMediaData):
-                pass
+                    ## save Album
+                    mediaList = item["extended_entities"]["media"]
+                    hashtags = item["entities"]["hashtags"]
+                    for media in mediaList:
+                        mediaDataModel = MediaDataModel(self.connection)
+                        
+                        albumIds = self.getAlbumIdList(twitterId, hashtags)
+                        if len(albumIds) > 0:
+                            mediaDataModel.saveNewMedia(albumIds, twitterId, twitterStatusId, media['media_url_https'], tweetObjectId)
+
+            except (KeyError, BrankMediaData) as e:
+                print e
         
             if not self.isRunning():
                 print "stop main steraming"
@@ -164,4 +163,4 @@ class BrankMediaData(BaseException):
 if __name__ == '__main__':
     streaming = TwitterDataStreaming()
     streaming.setup()    
-    #streaming.start()
+    streaming.start()
