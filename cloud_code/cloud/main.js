@@ -209,6 +209,9 @@ Parse.Cloud.job('syncArtistTwitterUserData', function(request, status) {
     var farmNum = 3;
     var now = new Date();
     var farm = now.getHours() % farmNum;
+
+    console.log("farm=" + farm);
+
     var Artist = Parse.Object.extend("Artist");
 
     var query = new Parse.Query(Artist);
