@@ -166,4 +166,4 @@ class BrankMediaData(BaseException):
 if __name__ == '__main__':
     streaming = TwitterDataStreaming()
     streaming.setup()    
-    streaming.start()
+    #streaming.start()

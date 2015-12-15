@@ -206,23 +206,26 @@ Parse.Cloud.job('syncGroupTwitterUserData', function(request, status) {
 Parse.Cloud.job('syncArtistTwitterUserData', function(request, status) {
     console.log("Started sync artist's twitter user data");
     Parse.Cloud.useMasterKey();
+    var farmNum = 3;
     var now = new Date();
-    var hh = now.getHours();
+    var farm = now.getHours() % farmNum;
     var Artist = Parse.Object.extend("Artist");
 
     var query = new Parse.Query(Artist);
     query.find(function(artists) {
-        var twitterIds= []
+        var twitterIds= [];
+        var updateArtists = [];
         for(var i = 0; i < artists.length; i++){
             var objectId = artists[i].id;
-            var hash = StringHash.calc(objectId)  % 24;
-            if (hash == hh){
+            var hash = StringHash.calc(objectId)  % farmNum;
+            if (hash == farm){
                 twitterIds.push(artists[i].get("twitterId"));
+                updateArtists.push(artists[i]);
             }
         }
         Twitter.getTwitterUsersLookup(twitterIds, function(error, userslookup) {
             for (var i = 0; i < userslookup.length; i++) {
-                Twitter.updateTargetAccountInfo(artists[i], userslookup[i], 
+                Twitter.updateTargetAccountInfo(updateArtists[i], userslookup[i], 
                 function(){
                     console.log("update artist data success");
                 },
