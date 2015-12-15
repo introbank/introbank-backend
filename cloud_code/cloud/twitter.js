@@ -222,10 +222,13 @@ var Twitter = {
      *
      */
     updateTargetAccountInfo : function(target, twitterUserInfo, successCb, failCb) {
-        console.log("updateTargetAccountInfo start");
+        console.log("updateTargetAccountInfo start:: objectId=" + target.id);
+        // error handling
         if (target.get("twitterId") != twitterUserInfo.id_str){
             console.log("error. target=" + target.get("twitterId") + ", twitterId=" + twitterUserInfo.id_str);
+            failCb("targetId error");
         }
+        else{
         target.set("name", twitterUserInfo.name);
         target.set("info", twitterUserInfo.description);
         var imageUrl = twitterUserInfo.profile_image_url_https.replace("_normal","");
@@ -240,6 +243,7 @@ var Twitter = {
                         failCb(error);
                     }
                 });
+        }
     },
 
     /**

@@ -206,7 +206,7 @@ Parse.Cloud.job('syncGroupTwitterUserData', function(request, status) {
 Parse.Cloud.job('syncArtistTwitterUserData', function(request, status) {
     console.log("Started sync artist's twitter user data");
     Parse.Cloud.useMasterKey();
-    var farmNum = 3;
+    var farmNum = 2;
     var now = new Date();
     var farm = now.getHours() % farmNum;
 
@@ -215,6 +215,7 @@ Parse.Cloud.job('syncArtistTwitterUserData', function(request, status) {
     var Artist = Parse.Object.extend("Artist");
 
     var query = new Parse.Query(Artist);
+    query.limit(1000);
     query.find(function(artists) {
         var twitterIds= [];
         var updateArtists = [];
