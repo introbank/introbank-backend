@@ -14,14 +14,14 @@ class MediaDataModel(BaseDataModel):
             ## save media
             mediaDataObject = MediaDataObject(self.connection)
             res = mediaDataObject.save(twitterId, twitterStatusId, mediaUri, tweetObjectId)
-            self.infoLog("save media::{0}".format(res))
+            self.infoLog("save media::{0}".format(str(res)))
             mediaId = res["objectId"]
 
             ## save AlbumMediaMap
             albumMediaMapDataObject = AlbumMediaMapDataObject(self.connection)
             for albumId in albumIds:
                 res = albumMediaMapDataObject.save(albumId, mediaId)
-                self.infoLog("save media map::{0}".format(res))
+                self.infoLog("save media map::{0}".format(str(res)))
                 self.infoLog("save media & map succeed")
 
             ## close

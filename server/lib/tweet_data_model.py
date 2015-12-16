@@ -12,7 +12,7 @@ class TweetDataModel(BaseDataModel):
             ## save media
             tweetDataObject = TweetDataObject(self.connection)
             res = tweetDataObject.save(twitterId, twitterStatusId, text, className, objectId)
-            self.infoLog("save tweetData {0}".format(res))
+            self.infoLog("save tweetData {0}".format(str(res)))
 
             ## close
             self._close()

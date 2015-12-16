@@ -124,7 +124,7 @@ class TwitterDataStreaming(object):
                 classInfo = self.getClassInfo(twitterId)
 
                 if classInfo is not None:
-                    print "::" + twitterId + "::" + twitterStatusId + "::" + text
+                    self.infoLog("twitterId={0}, twitterStatus={1}, text={2}".format(twitterId, twitterStatusId, text.encode("utf-8")))
                     ## save tweet
                     tweetDataModel = TweetDataModel(self.connection)
                     tweetObjectId = tweetDataModel.saveTweetData(twitterId, twitterStatusId, text, classInfo.name, classInfo.objectId)
