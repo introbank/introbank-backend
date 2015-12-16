@@ -48,7 +48,7 @@ if __name__ == '__main__':
 
     daemon = TwitterDataStreamingDaemon(interval, isDaemon)
     ## infinite loop
-    while True
+    while True:
         try:
             daemon.start()
         except Exception as e:

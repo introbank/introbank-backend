@@ -8,7 +8,7 @@ class GroupDataObject(BaseTargetDataObject):
 
     def getInfoToTwitterStream(self):
         infoList = []
-        response = self._find(queryDict={"keys":"twitterId,album,hashtag,subTwitterIds"})
+        response = self._find(queryDict={"keys":"twitterId,album,hashtag,subTwitterIds", "limit": 1000})
         try:
             for data in response["results"]:
                 info = {"objectId": data["objectId"], "twitterId":data["twitterId"],  "album":data["album"]["objectId"], "hashtag":None, "subTwitterIds": []}

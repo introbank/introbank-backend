@@ -8,7 +8,7 @@ class ArtistDataObject(BaseTargetDataObject):
 
     def getInfoToTwitterStream(self):
         infoList = []
-        response = self._find(queryDict={"keys":"twitterId,album"})
+        response = self._find(queryDict={"keys":"twitterId,album", "limit":1000})
         try:
             for data in response["results"]:
                 objectId = data["objectId"]
