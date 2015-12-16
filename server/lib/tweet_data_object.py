@@ -2,7 +2,8 @@
 from base_data_object import BaseDataObject
 
 class TweetDataObject(BaseDataObject):
-    def getClassName():
+    @classmethod
+    def getClassName(cls):
         return "Tweet"
 
     def save(self, twitterId, twitterStatusId, text, className, objectId, isReflected = False):

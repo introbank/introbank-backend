@@ -34,5 +34,14 @@ class LoggerUtil(object):
         except Exception as e:
             raise LogUtilException(e)
 
+    @classmethod
+    def encodedLog(cls, loggerMethod, message):
+        if isinstance(message, str):
+            message = message.decode("utf-8")
+        try:
+            loggerMethod(message)
+        except UnicodeDecodeError:
+            loggerMethod(message.encode("utf-8"))
+
 class LogUtilException(BaseException):
     pass

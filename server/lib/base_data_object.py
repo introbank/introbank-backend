@@ -14,20 +14,20 @@ class BaseDataObject(object):
     def _save(self, dataDict):
         return self.connection.save(self.className, dataDict)
 
-    def infoLog(self, mesasge):
-        self.logger.info(mesasge)
+    def infoLog(self, message):
+        LoggerUtil.encodedLog(self.logger.info, message)
 
     def errorLog(self, message):
-        self.logger.error(message)
+        LoggerUtil.encodedLog(self.logger.error, message)
 
     def warnLog(self, message):
-        self.logger.warn(message)
+        LoggerUtil.encodedLog(self.logger.warn, message)
 
     def debugLog(self, message):
-        self.logger.debug(message)
+        LoggerUtil.encodedLog(self.logger.debug, message)
 
     @abstractmethod
-    def getClassName():
+    def getClassName(cls):
         pass
 
 class DataObjectException(BaseException):

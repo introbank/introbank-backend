@@ -12,17 +12,17 @@ class BaseDataModel(object):
     def _close(self):
         self.connection.close()
 
-    def infoLog(self, mesasge):
-        self.logger.info(mesasge)
+    def infoLog(self, message):
+        LoggerUtil.encodedLog(self.logger.info, message)
 
     def errorLog(self, message):
-        self.logger.error(message)
+        LoggerUtil.encodedLog(self.logger.error, message)
 
     def warnLog(self, message):
-        self.logger.warn(message)
+        LoggerUtil.encodedLog(self.logger.warn, message)
 
     def debugLog(self, message):
-        self.logger.debug(message)
+        LoggerUtil.encodedLog(self.logger.debug, message)
 
 
 class DataModelException(BaseException):

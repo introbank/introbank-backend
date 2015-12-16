@@ -2,7 +2,9 @@
 from base_data_object import BaseDataObject
 
 class AlbumMediaMapDataObject(BaseDataObject):
-    tableName = "AlbumMediaMap"
+    @classmethod
+    def getClassName(cls):
+        return "AlbumMediaMap"
 
     def save(self, albumId, mediaId, isViewable = True):
         album = {"__type": "Pointer", "className":"Album", "objectId":albumId}

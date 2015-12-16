@@ -4,6 +4,7 @@
 import sys, os 
 import threading
 sys.path.append('{0}/../lib'.format(os.path.dirname(os.path.abspath(__file__))))
+from logger_util import LoggerUtil
 from twitter_stream import TwitterStream
 from artist_data_object import ArtistDataObject
 from group_data_object import GroupDataObject
@@ -19,14 +20,27 @@ class ParseClassInfo(object):
 class TwitterDataStreaming(object):
     COMMIN_TRACK = ["#ƒAƒCƒhƒ‹"]
 
-    def __init__(self):
+    def __init__(self, logger = LoggerUtil.getFileLogger()):
         self.connection = ParseConnection()
+        self.logger = logger
         self.track = []
         self.follow = []
         self.twitterIdInfo = {}
         self.hashtagAlbumIdMap = {}
         self.running = threading.Event()
         self.thread = threading.Thread(target = self.main)
+
+    def infoLog(self, message):
+        LoggerUtil.encodedLog(self.logger.info, message)
+
+    def errorLog(self, message):
+        LoggerUtil.encodedLog(self.logger.error, message)
+
+    def warnLog(self, message):
+        LoggerUtil.encodedLog(self.logger.warn, message)
+
+    def debugLog(self, message):
+        LoggerUtil.encodedLog(self.logger.debug, message)
 
     def twitterId2AlbumId(self, twitterId):
         try:
@@ -60,6 +74,8 @@ class TwitterDataStreaming(object):
         return albumIdList
 
     def setup(self):
+        print "setup start"
+        self.infoLog("set up start")
         ## data from DB
         artistDataObject = ArtistDataObject(self.connection)
         groupDataObject = GroupDataObject(self.connection)
@@ -89,14 +105,15 @@ class TwitterDataStreaming(object):
                 self.follow.append(subTwitterId)
                 self.twitterIdInfo[subTwitterId] = {"albumId":group["album"], "classInfo":ParseClassInfo("Group", group["objectId"])}
 
+        self.infoLog("follow::" + ",".join(self.follow))
+#        self.infoLog("track::" + ",".join(self.track))
 
-        print "follow::" + ",".join(self.follow)
-        print "track::" + ",".join(self.track)
 
 
 
     def main(self):
         print "main start"
+        self.infoLog("main start")
         for item in TwitterStream.get(follow=self.follow, track=self.track):
             ## save TweetId
             try:
@@ -122,7 +139,7 @@ class TwitterDataStreaming(object):
                             mediaDataModel.saveNewMedia(albumIds, twitterId, twitterStatusId, media['media_url_https'], tweetObjectId)
 
             except (KeyError, BrankMediaData) as e:
-                print e
+                self.errorLog(e)
         
             if not self.isRunning():
                 print "stop main steraming"
@@ -166,4 +183,4 @@ class BrankMediaData(BaseException):
 if __name__ == '__main__':
     streaming = TwitterDataStreaming()
     streaming.setup()    
-    #streaming.start()
+    streaming.start()

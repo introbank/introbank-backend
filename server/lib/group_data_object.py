@@ -2,7 +2,8 @@
 from base_target_data_object import BaseTargetDataObject
 
 class GroupDataObject(BaseTargetDataObject):
-    def getClassName():
+    @classmethod
+    def getClassName(cls):
         return "Group"
 
     def getInfoToTwitterStream(self):

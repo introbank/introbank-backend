@@ -2,7 +2,9 @@
 from base_target_data_object import BaseTargetDataObject
 
 class ArtistDataObject(BaseTargetDataObject):
-    tableName = "Artist"
+    @classmethod
+    def getClassName(cls):
+        return "Artist"
 
     def getInfoToTwitterStream(self):
         infoList = []
