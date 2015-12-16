@@ -106,7 +106,7 @@ class TwitterDataStreaming(object):
                 self.twitterIdInfo[subTwitterId] = {"albumId":group["album"], "classInfo":ParseClassInfo("Group", group["objectId"])}
 
         self.infoLog("follow::" + ",".join(self.follow))
-#        self.infoLog("track::" + ",".join(self.track))
+        self.infoLog("track::" + ",".join(self.track))
 
 
 
@@ -138,7 +138,12 @@ class TwitterDataStreaming(object):
                         if len(albumIds) > 0:
                             mediaDataModel.saveNewMedia(albumIds, twitterId, twitterStatusId, media['media_url_https'], tweetObjectId)
 
+            ## tweet has no media. 
             except (KeyError, BrankMediaData) as e:
+                pass
+
+            ## other errors
+            except Exception as e:
                 self.errorLog(e)
         
             if not self.isRunning():
@@ -183,4 +188,4 @@ class BrankMediaData(BaseException):
 if __name__ == '__main__':
     streaming = TwitterDataStreaming()
     streaming.setup()    
-    streaming.start()
+    #streaming.start()
