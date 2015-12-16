@@ -2,7 +2,8 @@
 from base_data_object import BaseDataObject
 
 class MediaDataObject(BaseDataObject):
-    tableName = "Media"
+    def getClassName():
+        return "Media"
 
     def save(self, twitterId, twitterStatusId, mediaUri, tweetObjectId):
         dataDict = {}

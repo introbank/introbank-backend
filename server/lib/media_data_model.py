@@ -14,17 +14,19 @@ class MediaDataModel(BaseDataModel):
             ## save media
             mediaDataObject = MediaDataObject(self.connection)
             res = mediaDataObject.save(twitterId, twitterStatusId, mediaUri, tweetObjectId)
-            print res
-            print "== save media =="
+            self.infoLog("save media::{0}".format(res))
             mediaId = res["objectId"]
 
             ## save AlbumMediaMap
             albumMediaMapDataObject = AlbumMediaMapDataObject(self.connection)
             for albumId in albumIds:
-                albumMediaMapDataObject.save(albumId, mediaId)
-                print "== save mediamap done =="
+                res = albumMediaMapDataObject.save(albumId, mediaId)
+                self.infoLog("save media map::{0}".format(res))
+                self.infoLog("save media & map succeed")
 
             ## close
             self._close()
         except KeyError:
-            raise DataModelException("unknown twitterid::".format(twitterId))
+            message = "unknown twitterid::".format(twitterId)
+            self.warnLog(message)
+            raise DataModelException(message)

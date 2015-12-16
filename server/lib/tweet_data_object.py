@@ -2,7 +2,8 @@
 from base_data_object import BaseDataObject
 
 class TweetDataObject(BaseDataObject):
-    tableName = "Tweet"
+    def getClassName():
+        return "Tweet"
 
     def save(self, twitterId, twitterStatusId, text, className, objectId, isReflected = False):
         dataDict = {"twitterId": str(twitterId),

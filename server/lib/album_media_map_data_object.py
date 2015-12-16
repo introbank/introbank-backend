@@ -10,6 +10,6 @@ class AlbumMediaMapDataObject(BaseDataObject):
 
         dataDict = {"album": album, "media":media, "isViewable": isViewable}
         res = self._save(dataDict)
-        print res
+        self.infoLog("res=" + res) 
         return res
 

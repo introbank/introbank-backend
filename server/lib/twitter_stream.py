@@ -10,6 +10,7 @@ class TwitterStream(object):
         for item in api.GetStreamFilter(follow=follow, track=track):
             yield item
                             
+## for test
 if __name__ == '__main__':
     follow = "3699404474"
     for item in TwitterStream.get(follow=[follow]):

@@ -2,7 +2,8 @@
 from base_target_data_object import BaseTargetDataObject
 
 class GroupDataObject(BaseTargetDataObject):
-    tableName = "Group"
+    def getClassName():
+        return "Group"
 
     def getInfoToTwitterStream(self):
         infoList = []
@@ -20,7 +21,7 @@ class GroupDataObject(BaseTargetDataObject):
 
                 infoList.append(info)
         except KeyError as e:
-            print "error::" + objectId
+            self.errorLog("group objectId={0} has error".format(objectId))
             raise Exception(e)
 
         return infoList

@@ -12,7 +12,7 @@ class ArtistDataObject(BaseTargetDataObject):
                 objectId = data["objectId"]
                 infoList.append({"objectId": objectId, "twitterId":data["twitterId"],  "album":data["album"]["objectId"]})
         except KeyError as e:
-            print "error::" + objectId
+            self.errorLog("artist objectId={0} has error.".format(objectId))
             raise Exception(e)
 
         return infoList

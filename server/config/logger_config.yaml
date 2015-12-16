@@ -2,7 +2,7 @@ version: 1
 
 formatters:
     custmoFormatter:
-        format: '[%(asctime)s]%(levelname)s - %(filename)s#%(funcName)s:%(lineno)d: %(message)s'
+        format: '[%(asctime)s][%(levelname)s] - %(filename)s#%(funcName)s:%(lineno)d: %(message)s'
         datefmt: '%Y/%m/%d %H:%M:%S'
 
 loggers:
@@ -23,7 +23,7 @@ handlers:
         formatter: custmoFormatter
         class: logging.handlers.TimedRotatingFileHandler
         level: DEBUG
-        filename: /tmp/debug.log
+        filename: /var/log/introbank/twitterstream.log
         encoding: utf8
         when: 'D'
         interval: 1

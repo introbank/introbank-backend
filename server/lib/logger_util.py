@@ -6,7 +6,7 @@ import yaml
 import logging
 import logging.config
 
-class LogUtil(object):
+class LoggerUtil(object):
     CONFIG = '{0}/../config/logger_conf.yaml'.format(os.path.dirname(os.path.abspath(__file__)))
 
     @classmethod
