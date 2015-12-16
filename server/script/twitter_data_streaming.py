@@ -11,36 +11,25 @@ from group_data_object import GroupDataObject
 from media_data_model import MediaDataModel
 from tweet_data_model import TweetDataModel
 from parse_connection import ParseConnection
+from base_executer import BaseExecuter
 
 class ParseClassInfo(object):
     def __init__(self, name, objectId):
         self.name = name
         self.objectId = objectId
 
-class TwitterDataStreaming(object):
+class TwitterDataStreaming(BaseExecuter):
     COMMIN_TRACK = ["#ƒAƒCƒhƒ‹"]
 
     def __init__(self, logger = LoggerUtil.getFileLogger()):
+        BaseExecuter.__init__(self, logger)
         self.connection = ParseConnection()
-        self.logger = logger
         self.track = []
         self.follow = []
         self.twitterIdInfo = {}
         self.hashtagAlbumIdMap = {}
         self.running = threading.Event()
         self.thread = threading.Thread(target = self.main)
-
-    def infoLog(self, message):
-        LoggerUtil.encodedLog(self.logger.info, message)
-
-    def errorLog(self, message):
-        LoggerUtil.encodedLog(self.logger.error, message)
-
-    def warnLog(self, message):
-        LoggerUtil.encodedLog(self.logger.warn, message)
-
-    def debugLog(self, message):
-        LoggerUtil.encodedLog(self.logger.debug, message)
 
     def twitterId2AlbumId(self, twitterId):
         try:
