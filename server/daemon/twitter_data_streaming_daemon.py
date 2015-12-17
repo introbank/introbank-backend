@@ -39,9 +39,6 @@ if __name__ == '__main__':
     isDaemon = False
     if len(args) == 2:
         interval = args[1]
-    elif(args) == 3:
-        interval = args[1]
-        isDaemon = True
     else:
         print "error:: 1st arg: interval(minutes), 2nd: debug"
         exit(1)
