@@ -78,27 +78,32 @@ class TwitterDataStreaming(BaseExecuter):
         ## end
 
         for artist in artistData:
-            self.follow.append(artist["twitterId"])
-            self.twitterIdInfo[artist["twitterId"]] = {"albumId":artist["album"], "classInfo":ParseClassInfo("Artist", artist["objectId"])}
+            try:
+                self.follow.append(artist["twitterId"])
+                self.twitterIdInfo[artist["twitterId"]] = {"albumId":artist["album"], "classInfo":ParseClassInfo("Artist", artist["objectId"])}
+            except Exception as e:
+                self.errorLog(e)
 
         for group in groupData:
-            self.follow.append(group["twitterId"])
-            self.twitterIdInfo[group["twitterId"]] = {"albumId":group["album"], "classInfo":ParseClassInfo("Group", group["objectId"])}
+            try:
+                self.follow.append(group["twitterId"])
+                self.twitterIdInfo[group["twitterId"]] = {"albumId":group["album"], "classInfo":ParseClassInfo("Group", group["objectId"])}
 
-            if (group["hashtag"] is not None):
-                self.track.append(group["hashtag"])
-                self.hashtagAlbumIdMap[group["hashtag"]] = group["album"]
+                if (group["hashtag"] is not None):
+                    self.track.append(group["hashtag"])
+                    self.hashtagAlbumIdMap[group["hashtag"]] = group["album"]
 
-            
-            # add subTwitterIds
-            for subTwitterId in group["subTwitterIds"]:
-                self.follow.append(subTwitterId)
-                self.twitterIdInfo[subTwitterId] = {"albumId":group["album"], "classInfo":ParseClassInfo("Group", group["objectId"])}
+                
+                # add subTwitterIds
+                for subTwitterId in group["subTwitterIds"]:
+                    self.follow.append(subTwitterId)
+                    self.twitterIdInfo[subTwitterId] = {"albumId":group["album"], "classInfo":ParseClassInfo("Group", group["objectId"])}
+
+            except Exception as e:
+                self.errorLog(e)
 
         self.infoLog("follow::" + ",".join(self.follow))
         self.infoLog("track::" + ",".join(self.track))
-
-
 
 
     def main(self):
