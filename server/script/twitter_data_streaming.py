@@ -54,8 +54,9 @@ class TwitterDataStreaming(object):
 
         for hashtagInfo in hashtags:
             hashtag = "#" + hashtagInfo["text"]
-            if self.hashtag2AlbumId(hashtag) is not None:
-                albumIdList.append(self.hashtag2AlbumId(hashtag))
+            albumId = self.hashtag2AlbumId(hashtag)
+            if albumId is not None:
+                albumIdList.append(albumId)
 
         return albumIdList
 
