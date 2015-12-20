@@ -12,10 +12,12 @@ class TweetDataModel(BaseDataModel):
             ## save media
             tweetDataObject = TweetDataObject(self.connection)
             res = tweetDataObject.save(twitterId, twitterStatusId, text, className, objectId)
-            print "== save tweetData =="
+            self.infoLog("save tweetData {0}".format(str(res)))
 
             ## close
             self._close()
             return res["objectId"]
         except KeyError:
-            raise DataModelException("unknown twitterid::".format(twitterId))
+            message = "unknown twitterid::".format(twitterId)
+            self.warnLog(message)
+            raise DataModelException(message)

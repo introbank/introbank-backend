@@ -1,16 +1,11 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
+
 from logger_util import LoggerUtil
 
-class BaseDataModel(object):
-    def __init__(self, connection, logger = LoggerUtil.getFileLogger()):
-        self.connection = connection
+class BaseExecuter(object):
+    def __init__(self, logger = LoggerUtil.getFileLogger()):
         self.logger = logger
-
-    def _connect(self):
-        self.connection.connect()
-
-    def _close(self):
-        self.connection.close()
 
     def infoLog(self, message):
         LoggerUtil.encodedLog(self.logger.info, message)
@@ -24,6 +19,5 @@ class BaseDataModel(object):
     def debugLog(self, message):
         LoggerUtil.encodedLog(self.logger.debug, message)
 
-
-class DataModelException(BaseException):
+class ExecuterException(BaseException):
     pass

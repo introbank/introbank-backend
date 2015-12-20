@@ -2,7 +2,9 @@
 from base_data_object import BaseDataObject
 
 class AlbumMediaMapDataObject(BaseDataObject):
-    tableName = "AlbumMediaMap"
+    @classmethod
+    def getClassName(cls):
+        return "AlbumMediaMap"
 
     def save(self, albumId, mediaId, isViewable = True):
         album = {"__type": "Pointer", "className":"Album", "objectId":albumId}
@@ -10,6 +12,6 @@ class AlbumMediaMapDataObject(BaseDataObject):
 
         dataDict = {"album": album, "media":media, "isViewable": isViewable}
         res = self._save(dataDict)
-        print res
+        self.infoLog("res={0}".format(str(res))) 
         return res
 

@@ -2,11 +2,13 @@
 from base_target_data_object import BaseTargetDataObject
 
 class GroupDataObject(BaseTargetDataObject):
-    tableName = "Group"
+    @classmethod
+    def getClassName(cls):
+        return "Group"
 
     def getInfoToTwitterStream(self):
         infoList = []
-        response = self._find(queryDict={"keys":"twitterId,album,hashtag,subTwitterIds"})
+        response = self._find(queryDict={"keys":"twitterId,album,hashtag,subTwitterIds", "limit": 1000})
         try:
             for data in response["results"]:
                 info = {"objectId": data["objectId"], "twitterId":data["twitterId"],  "album":data["album"]["objectId"], "hashtag":None, "subTwitterIds": []}
@@ -20,7 +22,7 @@ class GroupDataObject(BaseTargetDataObject):
 
                 infoList.append(info)
         except KeyError as e:
-            print "error::" + objectId
+            self.errorLog("group objectId={0} has error".format(objectId))
             raise Exception(e)
 
         return infoList
@@ -28,7 +30,7 @@ class GroupDataObject(BaseTargetDataObject):
     @classmethod
     def cleanupHashtag(cls, hashtag):
         ## clean "#" at first
-        hashtag = hashtag.encode("utf-8")
+        hashtag = hashtag.strip().encode("utf-8")
         return "#{0}".format(hashtag.replace("#", ''))
 
 

@@ -4,22 +4,25 @@
 import sys, os 
 import threading
 sys.path.append('{0}/../lib'.format(os.path.dirname(os.path.abspath(__file__))))
+from logger_util import LoggerUtil
 from twitter_stream import TwitterStream
 from artist_data_object import ArtistDataObject
 from group_data_object import GroupDataObject
 from media_data_model import MediaDataModel
 from tweet_data_model import TweetDataModel
 from parse_connection import ParseConnection
+from base_executer import BaseExecuter
 
 class ParseClassInfo(object):
     def __init__(self, name, objectId):
         self.name = name
         self.objectId = objectId
 
-class TwitterDataStreaming(object):
+class TwitterDataStreaming(BaseExecuter):
     COMMIN_TRACK = ["#ƒAƒCƒhƒ‹"]
 
-    def __init__(self):
+    def __init__(self, logger = LoggerUtil.getFileLogger()):
+        BaseExecuter.__init__(self, logger)
         self.connection = ParseConnection()
         self.track = []
         self.follow = []
@@ -61,6 +64,8 @@ class TwitterDataStreaming(object):
         return albumIdList
 
     def setup(self):
+        print "setup start"
+        self.infoLog("set up start")
         ## data from DB
         artistDataObject = ArtistDataObject(self.connection)
         groupDataObject = GroupDataObject(self.connection)
@@ -90,14 +95,15 @@ class TwitterDataStreaming(object):
                 self.follow.append(subTwitterId)
                 self.twitterIdInfo[subTwitterId] = {"albumId":group["album"], "classInfo":ParseClassInfo("Group", group["objectId"])}
 
+        self.infoLog("follow::" + ",".join(self.follow))
+        self.infoLog("track::" + ",".join(self.track))
 
-        print "follow::" + ",".join(self.follow)
-        print "track::" + ",".join(self.track)
 
 
 
     def main(self):
         print "main start"
+        self.infoLog("main start")
         for item in TwitterStream.get(follow=self.follow, track=self.track):
             ## save TweetId
             try:
@@ -108,7 +114,7 @@ class TwitterDataStreaming(object):
                 classInfo = self.getClassInfo(twitterId)
 
                 if classInfo is not None:
-                    print "::" + twitterId + "::" + twitterStatusId + "::" + text
+                    self.infoLog("twitterId={0}, twitterStatus={1}, text={2}".format(twitterId, twitterStatusId, text.encode("utf-8")))
                     ## save tweet
                     tweetDataModel = TweetDataModel(self.connection)
                     tweetObjectId = tweetDataModel.saveTweetData(twitterId, twitterStatusId, text, classInfo.name, classInfo.objectId)
@@ -122,8 +128,13 @@ class TwitterDataStreaming(object):
                         if len(albumIds) > 0:
                             mediaDataModel.saveNewMedia(albumIds, twitterId, twitterStatusId, media['media_url_https'], tweetObjectId)
 
+            ## tweet has no media. 
             except (KeyError, BrankMediaData) as e:
-                print e
+                pass
+
+            ## other errors
+            except Exception as e:
+                self.errorLog(e)
         
             if not self.isRunning():
                 print "stop main steraming"

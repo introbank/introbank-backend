@@ -2,7 +2,9 @@
 from base_data_object import BaseDataObject
 
 class AlbumDataObject(BaseDataObject):
-    tableName = "Album"
+    @classmethod
+    def getClassName(cls):
+        return "Album"
 
     def save(self, album, media, isViewable = True):
         isViewableStr = self.getIsViewableString(isViewable)
