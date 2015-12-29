@@ -1,6 +1,7 @@
 var OAuth = require('cloud/oauth.js');
 var sha   = require('cloud/sha1.js');
 var Twitter = require('cloud/twitter.js');
+var Account = require('cloud/account.js');
 var StringHash = require('cloud/string-hash.js');
 
 // Use Parse.Cloud.define to define as many cloud functions as you want.
@@ -267,6 +268,19 @@ Parse.Cloud.job('syncNewArtistData', function(request, status) {
 
 Parse.Cloud.job('syncNewGroupData', function(request, status) {
   Parse.Cloud.run('syncNewAccountData', {request:request["params"]});
+});
+
+
+Parse.Cloud.job('addMembersRelation', function(request, status) {
+  console.log("Started add relation from group to artist");
+  Parse.Cloud.useMasterKey();
+  var params = request["params"];
+  var limit = params["limit"];
+  console.log("limit=" + limit);
+  var query = new Parse.Query("Group");
+  query.limit(limit);
+  query.descending("createdAt");
+  Account.addMemberRelations(query);
 });
 
 

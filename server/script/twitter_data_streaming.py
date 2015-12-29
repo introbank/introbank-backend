@@ -61,7 +61,8 @@ class TwitterDataStreaming(BaseExecuter):
             if albumId is not None:
                 albumIdList.append(albumId)
 
-        return albumIdList
+        # to uniq list
+        return set(albumIdList)
 
     def setup(self):
         print "setup start"
