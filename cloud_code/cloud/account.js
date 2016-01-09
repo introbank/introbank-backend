@@ -1,31 +1,35 @@
 
 var Account = {
-  addMemberRelations : function(groupQuery){
-    groupQuery.find({
-      success: function(groups) {
-        for (var i = 0; i < groups.length; i++) {
-          var Group = Parse.Object.extend("Group"); 
-          var group = new Group();
-          group.id = groups[i].id;
-          var membersRelation = group.relation("members");
-          var membersQuery = membersRelation.query();
-          membersQuery.find({
-            success: function(artists) {
-              for (var j = 0; j < artists.length; j++) {
-                var Artist = Parse.Object.extend("Artist"); 
-                var artist = new Artist();
-                artist.id = artists[j].id;
-                console.log("group:" + group.id);
-                console.log("artist:" + artist.id);
-                var groupRelation = artist.relation("groups");
-                groupRelation.add(group);
-                artist.save();
-              }
-            }
-          });
+  addMemberRelations : function(group){
+    console.log("addMemberRelations start. group=" + group.id);
+    var membersQuery = group.relation("members").query();
+    membersQuery.find({
+      success: function(artists) {
+        var artistList = [];
+        for(i = 0; i < artists.length ; i++){
+          console.log("addMemberRelations start. artist=" + artists[i].id);
+          var groupRelation = artists[i].relation("groups");
+          groupRelation.add(group);
+          artistList.push(artists[i]);
         }
+        Parse.Object.saveAll(artistList, {
+          success: function(results) {
+          // All the objects were saved.
+          console.log("saveAll group::" + group.id + " success.");
+          },
+          error: function(results, error) {
+          console.log("saveAll group::" + group.id + " faild.");
+          console.log(error);
+          // An error occurred while saving one of the objects.
+          }, 
+        });
+      },
+      error: function(artists, error) {
+        console.log(error);
       }
-    })
+    }
+    );
+
   },
 };
 

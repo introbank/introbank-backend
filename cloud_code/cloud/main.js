@@ -37,8 +37,7 @@ Parse.Cloud.job('collectTwitterLike', function(request, status) {
             for (var i = 0; i < likes.length; i++) {
                 var like = likes[i];
                 Twitter.saveTwitterContribution(user, "like", 10, like, function(result) {
-                    console.log("Success saving twitter contribution");
-                           
+                    //console.log("Success saving twitter contribution");
                 },
                 function(error) {
                     console.log("Failed saving twitter contribution::" + error);
@@ -47,7 +46,7 @@ Parse.Cloud.job('collectTwitterLike', function(request, status) {
             if (likes.length > 0){
             Twitter.saveTwitterApiOffset(user, {favoritesListSinceId: likes[0].id_str}, 
                     function(result){ 
-                        console.log("Success saving api offset");
+                    //    console.log("Success saving api offset");
                     },
                     function(error){
                         console.log("Failed saving twitter api offset.code=" + error.code + ", message=" + error.message);
@@ -87,7 +86,7 @@ Parse.Cloud.job('updateTwitterContribution', function(request, status) {
         }
 
         query.each(function(target) {
-            console.log("Update twitter contribution. target.twitterId=" + target.get("twitterId"));
+//            console.log("Update twitter contribution. target.twitterId=" + target.get("twitterId"));
 
             Twitter.updateTwitterContribution(target,
                 function(responce){
@@ -116,7 +115,7 @@ Parse.Cloud.job('cleanTwitterContribution', function(request, status) {
             function(responce){
                 console.log("Success clean twitter contribution");
             },
-            function(error){
+            function(responce, error){
                 console.log("Fail clean twitter contribution");
             }
             );
@@ -276,11 +275,23 @@ Parse.Cloud.job('addMembersRelation', function(request, status) {
   Parse.Cloud.useMasterKey();
   var params = request["params"];
   var limit = params["limit"];
+
   console.log("limit=" + limit);
-  var query = new Parse.Query("Group");
+  var Group = Parse.Object.extend("Group");
+  var query = new Parse.Query(Group);
   query.limit(limit);
   query.descending("createdAt");
-  Account.addMemberRelations(query);
+  query.find({
+    success: function(groups){
+      for (i = 0; i < groups.length; i++){
+        Account.addMemberRelations(groups[i]);
+      }
+    },
+    error: function(group, error) {
+        console.log(error);
+        status.error("Query failed");
+    }
+  });
 });
 
 
