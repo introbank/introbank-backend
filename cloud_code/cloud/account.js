@@ -1,13 +1,13 @@
 
 var Account = {
   addMemberRelations : function(group){
-    console.log("addMemberRelations start. group=" + group.id);
+    //console.log("addMemberRelations start. group=" + group.id);
     var membersQuery = group.relation("members").query();
     membersQuery.find({
       success: function(artists) {
         var artistList = [];
         for(i = 0; i < artists.length ; i++){
-          console.log("addMemberRelations start. artist=" + artists[i].id);
+          //console.log("addMemberRelations start. artist=" + artists[i].id);
           var groupRelation = artists[i].relation("groups");
           groupRelation.add(group);
           artistList.push(artists[i]);
