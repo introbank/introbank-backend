@@ -1,6 +1,6 @@
 var OAuth = require('cloud/oauth.js');
 var sha   = require('cloud/sha1.js');
-var IntroApp = require('cloud/intro_app.js');
+var TokenSetting = require('cloud/token_setting.js');
 
 var Twitter = {
 
@@ -310,12 +310,13 @@ var Twitter = {
 
     httpAppOAuthedRequest : function(url, params, cbSuccess, cbFail) {
         console.log("url=" + url);
+        var token = TokenSetting.DATA_SYNC;
         Parse.Cloud.httpRequest({
             url: url,
             followRedirects: true,
             headers: {
                 "Authorization": Twitter.getOAuthSignature(url, params,
-                    IntroApp.ACCESS_TOKEN_KEY, IntroApp.ACCESS_TOKEN_SECRET, IntroApp.CONSUMER_KEY, IntroApp.CONSUMER_SECRET)
+                    token.ACCESS_TOKEN_KEY, token.ACCESS_TOKEN_SECRET, token.CONSUMER_KEY, token.CONSUMER_SECRET)
             },
             params: params
         }).then(function (res) {
