@@ -6,6 +6,14 @@ var TokenSetting = {
     ACCESS_TOKEN_KEY : "3699404474-vtxVqJYgmLCWb6faxBMkXQ2gMVT4GY8gNX79uNW",
     ACCESS_TOKEN_SECRET : "H6vFgTSHAEfTJuZBTsBSSMrfjFQZGfHJICyXUf6dmArr2",
   },
+
+  REPORT : {
+    CONSUMER_KEY : "gRKVT1Pwsoq9fBzo6OVJOltN7",
+    CONSUMER_SECRET : "oA5Rz15UCy1M885RRGxcxX1wxC2EIHZYz2OOMXTrsTL5hFwohx",
+    ACCESS_TOKEN_KEY : "4533454754-qTvQuz7AXp92hgIbGjAv339zmoX154XrJ7tLkTX",
+    ACCESS_TOKEN_SECRET : "gzddV4aggQvjOWgHjQKyOv5jZ5q7BeMl2kHHtcVYgupoF",
+  },
+
 };
 
 module.exports = TokenSetting;
