@@ -329,6 +329,39 @@ var Twitter = {
         });
     },
 
+    migragteTwitterContirbution : function() {
+        var contribList = [];
+        var TwitterContribution = Parse.Object.extend("TwitterContribution");
+        var query = new Parse.Query(TwitterContribution);
+        query.limit(1000);
+        query.equalTo("type", "retweet");
+        query.equalTo("point", null);
+        query.find({
+            success: function(twitterContrib) {
+                console.log("twitterContrib.length= " + twitterContrib.length);
+                for (var i = 0; i < twitterContrib.length; i++) {
+                    var contrib = twitterContrib[i];
+                    contrib.set("point", 2);
+                    contribList.push(contrib);
+                }
+                console.log("contribList.length= " + contribList.length);
+                Parse.Object.saveAll(contribList, {
+                    success:function(results) {
+                        console.log(results);
+                    },
+                    error:function(error) {
+                        console.log(error.message)
+                        failCb(error);
+                    }
+                });
+
+                },
+            error: function(error){
+                console.log(error.message)
+                failCb(error);
+            }
+        });
+   },
 };
 
 

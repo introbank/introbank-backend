@@ -36,7 +36,7 @@ Parse.Cloud.job('collectTwitterLike', function(request, status) {
         Twitter.getLike(user, function(error, likes) {
             for (var i = 0; i < likes.length; i++) {
                 var like = likes[i];
-                Twitter.saveTwitterContribution(user, "like", 10, like, function(result) {
+                Twitter.saveTwitterContribution(user, "like", 1, like, function(result) {
                     //console.log("Success saving twitter contribution");
                 },
                 function(error) {
@@ -139,7 +139,7 @@ Parse.Cloud.job('collectTwitterRetweet', function(request, status) {
                 var tweet = tweets[i];
                 if(tweet.retweeted == true){
                     var retweet = tweet.retweeted_status;
-                    Twitter.saveTwitterContribution(user, "retweet", 20, retweet, function(result) {
+                    Twitter.saveTwitterContribution(user, "retweet", 2, retweet, function(result) {
                             console.log("Success saving twitter contribution");
                         }
                         , function(error) {
@@ -293,5 +293,11 @@ Parse.Cloud.job('addMembersRelation', function(request, status) {
     }
   });
 });
+
+Parse.Cloud.job('migragteTwitterContirbution', function(request, status) {
+    Parse.Cloud.useMasterKey();
+    Twitter.migragteTwitterContirbution();
+});
+
 
 
