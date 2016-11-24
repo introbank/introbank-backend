@@ -2,10 +2,10 @@
 import twitter
 
 class TwitterUtil(object):
-    CONSUMER_KEY = "LZXKM3AFHSWWy7c9EVJu90kYZ"
-    CONSUMER_SECRET = "bxR8uOR1FgHLLa0g4gdbNrmu465Qb5Nsd0E14afGExmTKZ7PRV" 
-    ACCESS_TOKEN_KEY = "3699404474-aGC4yBOzlXPCmXinDPzrPZdN3yAJb3V03HLOdls"
-    ACCESS_TOKEN_SECRET = "m4AVTdJHknG0qYnkQEgVbMVhQhWfmBLbUuMmmv57R2ckP"
+    CONSUMER_KEY = "hoge"
+    CONSUMER_SECRET = "moge" 
+    ACCESS_TOKEN_KEY = "moga"
+    ACCESS_TOKEN_SECRET = "fuga"
     STREAM_API_BASE_URL = "https://stream.twitter.com/1.1"
 
     @classmethod
